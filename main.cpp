@@ -112,7 +112,7 @@ void pressSpecialKey(int key, int xx, int yy) {
 
 int main(int argc, char** argv) {
   pugi::xml_document doc;
-  if (!doc.load_file("ethyl.cml")) return -1;
+  if (!doc.load_file("caffeine.cml")) return -1;
   std::string name = doc.child("molecule").child_value("name");
   std::cout << "Loaded molecule: " << doc.child("molecule").child_value("name") << std::endl;
 
@@ -135,8 +135,6 @@ int main(int argc, char** argv) {
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
   cam = new Camera(position, lookAtPoint, upVector);
-
-
 
   pugi::xml_node atoms = doc.child("molecule").child("atomArray");
   for (pugi::xml_node atom = atoms.child("atom"); atom; atom = atom.next_sibling("atom")) {
