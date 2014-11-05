@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
   cam = new Camera(position, lookAtPoint, upVector);
 
   pugi::xml_document doc;
-  if (!doc.load_file("caffeine.cml")) return -1;
+  if (!doc.load_file("ethyl.cml")) return -1;
   std::cout << "Loaded molecule: " << doc.child("molecule").child_value("name") << std::endl;
   pugi::xml_node atoms = doc.child("molecule").child("atomArray");
   for (pugi::xml_node atom = atoms.child("atom"); atom; atom = atom.next_sibling("atom")) {
