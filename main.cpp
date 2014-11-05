@@ -15,7 +15,7 @@ const GLfloat FORWARD_AMT = 10;
 const GLfloat TIMER_TICK = 20; // milliseconds
 const GLfloat ATOM_RADIUS = 1;
 
-Vector3f position (100, 100, 100);
+Vector3f position (10, 10, 10);
 Vector3f lookAtPoint(0, 0, 0);
 Vector3f upVector(0, 1, 0);
 
@@ -34,14 +34,12 @@ void display() {
 
   glUseProgram(shaderProg);
 
-  // sphere->applyTransformation(worldMat);
-
-  // draw them spheres, applying all transformations
-  // sphere->drawSphere(shaderProg);
-  //
-  for(std::vector<Atom>::iterator it = atom_list.begin(); it != atom_list.end(); ++it) {
-    it->applyTransformation(worldMat);
-    it->draw(shaderProg);
+  /**
+   * Go through each atom and draw it.
+   */
+  for(std::vector<Atom>::iterator atom = atom_list.begin(); atom != atom_list.end(); ++atom) {
+    atom->applyTransformation(worldMat);
+    atom->draw(shaderProg);
   }
 
   glUseProgram(0);
@@ -125,9 +123,6 @@ int main(int argc, char** argv) {
 
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
-  // For Task 1.
-  // sphere = new SolidSphere(0.75, 24, 24);
-
   cam = new Camera(position, lookAtPoint, upVector);
 
   pugi::xml_document doc;
@@ -135,15 +130,16 @@ int main(int argc, char** argv) {
   std::cout << "Loaded molecule: " << doc.child("molecule").child_value("name") << std::endl;
   pugi::xml_node atoms = doc.child("molecule").child("atomArray");
   for (pugi::xml_node atom = atoms.child("atom"); atom; atom = atom.next_sibling("atom")) {
-    std::cout << "Element: " << atom.attribute("elementType").value();
-    std::cout << ", X: " << atom.attribute("x3").as_float();
-    std::cout << ", Y: " << atom.attribute("y3").as_float();
-    std::cout << ", Z: " << atom.attribute("z3").as_float();
-    std::cout << std::endl;
-
     GLfloat x = atom.attribute("x3").as_float();
     GLfloat y = atom.attribute("y3").as_float();
     GLfloat z = atom.attribute("z3").as_float();
+
+    std::cout << "Element: " << atom.attribute("elementType").value();
+    std::cout << ", X: " << x;
+    std::cout << ", Y: " << y;
+    std::cout << ", Z: " << z;
+    std::cout << std::endl;
+
     atom_list.push_back(Atom(ATOM_RADIUS, x, y, z));
   }
 

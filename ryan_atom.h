@@ -15,7 +15,6 @@ public:
     this->x = x;
     this->y = y;
     this->z = z;
-    this->applyTransformation(Matrix4f::translation(this->x, this->y, this->z));
   }
 
   ~Atom() {
