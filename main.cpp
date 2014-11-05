@@ -13,7 +13,7 @@ const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
 const GLfloat FORWARD_AMT = 10;
 const GLfloat TIMER_TICK = 20; // milliseconds
-const GLfloat ATOM_RADIUS = 1;
+const GLfloat ATOM_RADIUS = 0.9;
 
 Vector3f position (10, 10, 10);
 Vector3f lookAtPoint(0, 0, 0);
@@ -111,11 +111,22 @@ void pressSpecialKey(int key, int xx, int yy) {
 }
 
 int main(int argc, char** argv) {
+  pugi::xml_document doc;
+  if (!doc.load_file("ethyl.cml")) return -1;
+  std::string name = doc.child("molecule").child_value("name");
+  std::cout << "Loaded molecule: " << doc.child("molecule").child_value("name") << std::endl;
+
   Shader s;
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(800, 600);
-  glutCreateWindow("OpenGL Molecules");
+
+  if(name.length() > 0) {
+    glutCreateWindow(name.c_str());
+  } else {
+    glutCreateWindow("OpenGL Molecules");
+  }
+
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
@@ -125,9 +136,8 @@ int main(int argc, char** argv) {
 
   cam = new Camera(position, lookAtPoint, upVector);
 
-  pugi::xml_document doc;
-  if (!doc.load_file("ethyl.cml")) return -1;
-  std::cout << "Loaded molecule: " << doc.child("molecule").child_value("name") << std::endl;
+
+
   pugi::xml_node atoms = doc.child("molecule").child("atomArray");
   for (pugi::xml_node atom = atoms.child("atom"); atom; atom = atom.next_sibling("atom")) {
     GLfloat x = atom.attribute("x3").as_float();
