@@ -4,24 +4,25 @@
 #include <iostream>
 #include "pugixml.hpp"
 #include "Shader.h"
-#include "ryan_sphere.h"
+#include "ryan_atom.h"
 #include "ryan_cube.h"
 #include "ryan_camera.h"
 #include "ryan_matrix.h"
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
-const GLfloat FORWARD_AMT = 0.2;
+const GLfloat FORWARD_AMT = 10;
 const GLfloat TIMER_TICK = 20; // milliseconds
+const GLfloat ATOM_RADIUS = 1;
 
-Vector3f position (5, 5, 5);
+Vector3f position (100, 100, 100);
 Vector3f lookAtPoint(0, 0, 0);
 Vector3f upVector(0, 1, 0);
 
 Camera * cam;
 GLuint shaderProg;
 GLint windowHeight, windowWidth;
-SolidSphere * sphere;
+std::vector<Atom> atom_list;
 
 void display() {
   glEnable(GL_DEPTH_TEST);
@@ -33,10 +34,15 @@ void display() {
 
   glUseProgram(shaderProg);
 
-  sphere->applyTransformation(worldMat);
+  // sphere->applyTransformation(worldMat);
 
   // draw them spheres, applying all transformations
-  sphere->drawSphere(shaderProg);
+  // sphere->drawSphere(shaderProg);
+  //
+  for(std::vector<Atom>::iterator it = atom_list.begin(); it != atom_list.end(); ++it) {
+    it->applyTransformation(worldMat);
+    it->draw(shaderProg);
+  }
 
   glUseProgram(0);
   glFlush();
@@ -107,18 +113,6 @@ void pressSpecialKey(int key, int xx, int yy) {
 }
 
 int main(int argc, char** argv) {
-  pugi::xml_document doc;
-  if (!doc.load_file("caffeine.cml")) return -1;
-  std::cout << "Loaded molecule: " << doc.child("molecule").child_value("name") << std::endl;
-  pugi::xml_node atoms = doc.child("molecule").child("atomArray");
-  for (pugi::xml_node atom = atoms.child("atom"); atom; atom = atom.next_sibling("atom")) {
-    std::cout << "Element: " << atom.attribute("elementType").value();
-    std::cout << ", X: " << atom.attribute("x3").as_float();
-    std::cout << ", Y: " << atom.attribute("y3").as_float();
-    std::cout << ", Z: " << atom.attribute("z3").as_float();
-    std::cout << std::endl;
-  }
-
   Shader s;
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -132,9 +126,26 @@ int main(int argc, char** argv) {
   s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
 
   // For Task 1.
-  sphere = new SolidSphere(0.75, 24, 24);
+  // sphere = new SolidSphere(0.75, 24, 24);
 
   cam = new Camera(position, lookAtPoint, upVector);
+
+  pugi::xml_document doc;
+  if (!doc.load_file("caffeine.cml")) return -1;
+  std::cout << "Loaded molecule: " << doc.child("molecule").child_value("name") << std::endl;
+  pugi::xml_node atoms = doc.child("molecule").child("atomArray");
+  for (pugi::xml_node atom = atoms.child("atom"); atom; atom = atom.next_sibling("atom")) {
+    std::cout << "Element: " << atom.attribute("elementType").value();
+    std::cout << ", X: " << atom.attribute("x3").as_float();
+    std::cout << ", Y: " << atom.attribute("y3").as_float();
+    std::cout << ", Z: " << atom.attribute("z3").as_float();
+    std::cout << std::endl;
+
+    GLfloat x = atom.attribute("x3").as_float();
+    GLfloat y = atom.attribute("y3").as_float();
+    GLfloat z = atom.attribute("z3").as_float();
+    atom_list.push_back(Atom(ATOM_RADIUS, x, y, z));
+  }
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);
