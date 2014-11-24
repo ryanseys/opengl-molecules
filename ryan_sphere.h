@@ -17,11 +17,11 @@ int numTriangles;
 
 struct sphereVertex {
   float pos[4];
-  float normal[4];  // the average normal
-  short numFaces;   // number of faces shared by the vertex
-  long colora;    // ambient colour - change to a colour structure
-  long colord;        // diffuse color    - change to a colour structure
-  long colors;    // specular colour  - change to a colour structure
+  float normal[4]; // the average normal
+  short numFaces;  // number of faces shared by the vertex
+  long colora;     // ambient colour - change to a colour structure
+  long colord;     // diffuse color    - change to a colour structure
+  long colors;     // specular colour  - change to a colour structure
 };
 
 class SolidSphere {
@@ -32,10 +32,18 @@ protected:
     GLuint triangleVBO; // Triangle handle that contains triangle indices
     GLuint * ind = NULL;
     int numInd;
-    std::vector<Matrix4f> transformations;
+    Matrix4f modelMat = Matrix4f::identity();
+    Matrix4f rotMat = Matrix4f::identity();
 public:
+  Vector4f materialAmbient;
+  Vector4f materialDiffuse;
+  Vector4f materialSpecular;
 
   SolidSphere(GLfloat radius, GLuint numLong, GLuint numLat) {
+    materialAmbient = Vector4f(0, 0, 0, 0);
+    materialDiffuse = Vector4f(0, 0, 0, 0);
+    materialSpecular = Vector4f(0, 0, 0, 0);
+
     this->radius = radius;
     int rc = 0;
     int i, j, k;
@@ -120,7 +128,7 @@ public:
     glBufferData(GL_ARRAY_BUFFER, sizeof(struct sphereVertex)*numVtx, vtx, GL_STATIC_DRAW);
     glGenBuffers(1, &triangleVBO);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangleVBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint)*numTriangles*3, ind, GL_STATIC_DRAW);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * numInd, ind, GL_STATIC_DRAW);
   }
 
   /**
@@ -129,8 +137,15 @@ public:
    * @param degrees Degrees to rotate it.
    */
   void rotateY(GLfloat degrees) {
-    Matrix4f rotateYMat = Matrix4f::rotateY(degrees, true);
-    this->applyTransformation(rotateYMat);
+    Matrix4f tempRot = Matrix4f::rotateY(degrees, true);
+    rotMat = rotMat * tempRot;
+    modelMat = modelMat * tempRot;
+  }
+
+  void rotateX(GLfloat degrees) {
+    Matrix4f tempRot = Matrix4f::rotateX(degrees, true);
+    rotMat = rotMat * tempRot;
+    modelMat = modelMat * tempRot;
   }
 
   /**
@@ -140,19 +155,20 @@ public:
    * @param y translation on y-axis
    * @param z translation on z-axis
    */
-  void translate(GLfloat x, GLfloat y, GLfloat z) {
-    Matrix4f translateZMat = Matrix4f::translation(x, y, z);
-    this->applyTransformation(translateZMat);
-  }
+  // void translate(GLfloat x, GLfloat y, GLfloat z) {
+  //   Matrix4f translateZMat = Matrix4f::translation(x, y, z);
+  //   this->applyTransformation(translateZMat);
+  // }
 
   /**
    * Adjust the pitch of the sphere by some amount
    * @param degrees Degrees to adjust pitch.
    */
   void pitch(Vector3f position, GLfloat degrees) {
-    this->applyTransformation(Matrix4f::translation(position.x, position.y, position.z));
-    this->applyTransformation(Matrix4f::rotateRollPitchYaw(0.0, degrees, 0.0, true));
-    this->applyTransformation(Matrix4f::translation(-position.x, -position.y, -position.z));
+    // modelMat = modelMat * Matrix4f::translation(position.x, position.y, position.z);
+    // modelMat = modelMat * Matrix4f::rotateRollPitchYaw(0.0, degrees, 0.0, true);
+    // rotMat = rotMat * Matrix4f::rotateRollPitchYaw(0.0, degrees, 0.0, true);
+    // modelMat = modelMat * Matrix4f::translation(-position.x, -position.y, -position.z);
   }
 
   /**
@@ -160,20 +176,26 @@ public:
    * @param shaderProg Shader program to use.
    */
   void drawSphere(GLuint shaderProg) {
-    Matrix4f matrix = Matrix4f::identity();
-    int size = this->transformations.size();
-    for(int i = 0; i < size; i++) {
-      matrix = matrix * this->transformations.at(i);
-    }
+    Matrix4f normalMat = Matrix4f::transpose(Matrix4f::inverse(this->rotMat));
+    modelMat = modelMat * Matrix4f::scale(radius, radius, radius);
 
-    matrix = matrix * Matrix4f::scale(radius, radius, radius);
+    GLuint modelLoc = glGetUniformLocation(shaderProg,  "modelMat");
+    glUniformMatrix4fv(modelLoc, 1, 1, (float *) modelMat.vm);
 
-    GLuint locMat = 0;
-    locMat = glGetUniformLocation(shaderProg,  "modelViewProjMat");
-    glUniformMatrix4fv(locMat, 1, 1, (float *) matrix.vm);
+    GLuint normalMatLoc = glGetUniformLocation(shaderProg,  "normalMat");
+    glUniformMatrix4fv(normalMatLoc, 1, 1, (float *) normalMat.vm);
 
-    GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
-    GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
+    GLuint matAmbLoc = glGetUniformLocation(shaderProg,  "materialAmb");
+    glUniform4fv(matAmbLoc, 1, (float *) &materialAmbient);
+
+    GLuint matDiffLoc = glGetUniformLocation(shaderProg,  "materialDiff");
+    glUniform4fv(matDiffLoc, 1, (float *) &materialDiffuse);
+
+    GLuint matSpecLoc = glGetUniformLocation(shaderProg,  "materialSpec");
+    glUniform4fv(matSpecLoc, 1, (float *) &materialSpecular);
+
+    GLuint positionLoc = glGetAttribLocation(shaderProg, "vPosition");
+    GLuint normalLoc = glGetAttribLocation(shaderProg, "vNormal");
     glEnableVertexAttribArray(positionLoc);
     glEnableVertexAttribArray(normalLoc);
     glBindBuffer(GL_ARRAY_BUFFER, sphereVBO);
@@ -185,18 +207,34 @@ public:
     glVertexAttribPointer(positionLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
     relAddress = (char *) v.normal - (char *) &v;
     glVertexAttribPointer(normalLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
-
     // draw the triangles
     glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
     this->clear();
   }
 
-  void applyTransformation(Matrix4f m) {
-    this->transformations.push_back(m);
+  void scale(GLfloat xAmt, GLfloat yAmt, GLfloat zAmt) {
+    modelMat = modelMat * Matrix4f::scale(xAmt, yAmt, zAmt);
+  }
+
+  void translate(GLfloat x, GLfloat y, GLfloat z) {
+    modelMat = modelMat * Matrix4f::translation(x, y, z);
+  }
+
+  void setAmbient(GLfloat r, GLfloat g, GLfloat b) {
+    this->materialAmbient = Vector4f(r, g, b, 0.0);
+  }
+
+  void setDiffuse(GLfloat r, GLfloat g, GLfloat b) {
+    this->materialDiffuse = Vector4f(r, g, b, 0.0);
+  }
+
+  void setSpecular(GLfloat r, GLfloat g, GLfloat b) {
+    this->materialSpecular = Vector4f(r, g, b, 0.0);
   }
 
   void clear() {
-    this->transformations.clear();
+    this->modelMat = Matrix4f::identity();
+    this->rotMat = Matrix4f::identity();
   }
 };
 

@@ -8,6 +8,7 @@
 #include "ryan_cube.h"
 #include "ryan_camera.h"
 #include "ryan_matrix.h"
+#include "ryan_light.h"
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
@@ -20,25 +21,76 @@ Vector3f lookAtPoint(0, 0, 0);
 Vector3f upVector(0, 1, 0);
 
 Camera * cam;
+
+Light * light;
+Light * spotlight;
+
+GLfloat shininess = 5.0; // min is zero
+GLfloat SHINY_FACTOR = 5.0;
+
 GLuint shaderProg;
 GLint windowHeight, windowWidth;
 std::vector<Atom> atom_list;
+
+float addShininess(GLfloat amount) {
+  GLfloat SHINY_MIN = 0;
+  GLfloat SHINY_MAX = 250;
+  shininess += amount;
+  if(shininess < SHINY_MIN) {
+    shininess = SHINY_MIN;
+  } else if(shininess > SHINY_MAX) {
+    shininess = SHINY_MAX;
+  }
+  return shininess;
+}
 
 void display() {
   glEnable(GL_DEPTH_TEST);
   glClearColor(0.0, 0.0, 0,1);
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
+  glUseProgram(shaderProg);
+
+  GLuint viewMatLoc = glGetUniformLocation(shaderProg,  "viewMat");
+  glUniformMatrix4fv(viewMatLoc, 1, 1, (float *) cam->getViewMatrix().vm);
+
+  GLuint projMatLoc = glGetUniformLocation(shaderProg,  "projMat");
+  glUniformMatrix4fv(projMatLoc, 1, 1, (float *) cam->getProjMatrix().vm);
+
+  GLuint lightAmbLoc = glGetUniformLocation(shaderProg,  "lightAmb");
+  glUniform4fv(lightAmbLoc, 1, (float *) &light->ambient);
+
+  GLuint lightDiffLoc = glGetUniformLocation(shaderProg,  "lightDiff");
+  glUniform4fv(lightDiffLoc, 1, (float *) &light->diffuse);
+
+  GLuint lightSpecLoc = glGetUniformLocation(shaderProg,  "lightSpec");
+  glUniform4fv(lightSpecLoc, 1, (float *) &light->specular);
+
+  GLuint lightPosLoc = glGetUniformLocation(shaderProg,  "lightPos");
+  glUniform4fv(lightPosLoc, 1, (float *) &light->position);
+
+  GLuint shininessLoc = glGetUniformLocation(shaderProg,  "shininess");
+  glUniform1f(shininessLoc, shininess);
+
+  // GLuint spotPosLoc = glGetUniformLocation(shaderProg,  "spotPos");
+  // glUniform4fv(spotPosLoc, 1, (float *) &spotlight->position);
+
+  // GLuint spotLookAtLoc = glGetUniformLocation(shaderProg,  "spotLookAtPnt");
+  // glUniform4fv(spotLookAtLoc, 1, (float *) &spotlight->lookAtPoint);
+
+  // GLuint spotAngAttenLoc = glGetUniformLocation(shaderProg,  "spotAngAtten");
+  // glUniform1f(spotAngAttenLoc, spotlight->angularAtten);
+
+  // GLuint spotConeAngleLoc = glGetUniformLocation(shaderProg,  "spotConeAngle");
+  // glUniform1f(spotConeAngleLoc, spotlight->coneAngle);
+
   // setting up the transformaiton of the object from model coord. system to world coord.
   Matrix4f worldMat = cam->getViewMatrix();
-
-  glUseProgram(shaderProg);
 
   /**
    * Go through each atom and draw it.
    */
   for(std::vector<Atom>::iterator atom = atom_list.begin(); atom != atom_list.end(); ++atom) {
-    atom->applyTransformation(worldMat);
     atom->draw(shaderProg);
   }
 
@@ -132,7 +184,7 @@ int main(int argc, char** argv) {
   glutKeyboardFunc(keyboardFunc);
   glutSpecialFunc(pressSpecialKey);
 
-  s.createShaderProgram("sphere.vert", "sphere.frag", &shaderProg);
+  s.createShaderProgram("phong.vert", "phong.frag", &shaderProg);
 
   cam = new Camera(position, lookAtPoint, upVector);
 
@@ -150,6 +202,23 @@ int main(int argc, char** argv) {
 
     atom_list.push_back(Atom(ATOM_RADIUS, x, y, z));
   }
+
+  // Set up light
+  light = new Light();
+  // white light
+  light->setAmbient(1.0, 1.0, 1.0);
+  light->setDiffuse(1.0, 1.0, 1.0);
+  light->setSpecular(1.0, 1.0, 1.0);
+  light->setPosition(10, 10, 10);
+
+  // Task 5: Create a spotlight
+  spotlight = new Light();
+  // white spotlight by default
+  spotlight->setAmbient(1.0, 1.0, 1.0);
+  spotlight->setDiffuse(1.0, 1.0, 1.0);
+  spotlight->setSpecular(1.0, 1.0, 1.0);
+  spotlight->setPosition(10, 10, 10);
+  spotlight->setLookAtPoint(0, 0, 0); // center of sphere
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);

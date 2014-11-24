@@ -1,6 +1,7 @@
 #ifndef RYAN_CAMERA
 #define RYAN_CAMERA
 
+#pragma once
 #include "ryan_matrix.h"
 
 class Camera {
@@ -18,6 +19,7 @@ public:
   Matrix4f viewMat;
   Matrix4f projMat;
   Matrix4f getViewMatrix();
+  Matrix4f getProjMatrix();
   float speed;
 
   // Camera(void);

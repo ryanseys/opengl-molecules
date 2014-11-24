@@ -22,12 +22,15 @@ public:
   }
 
   void draw(GLuint shaderProg) {
-    this->applyTransformation(Matrix4f::translation(this->x, this->y, this->z));
+    this->translate(this->x, this->y, this->z);
+    this->sphere->setAmbient(1.0, 0.0, 0.2); // material ambient color
+    this->sphere->setDiffuse(1.0, 1.0, 0.5); // material diffuse color
+    this->sphere->setSpecular(0.8, 0.8, 0.8); // material specular color
     this->sphere->drawSphere(shaderProg);
   }
 
-  void applyTransformation(Matrix4f m) {
-    this->sphere->applyTransformation(m);
+  void translate(GLfloat x, GLfloat y, GLfloat z) {
+    this->sphere->translate(x, y, z);
   }
 
   void clear() {
