@@ -25,7 +25,6 @@ public:
   Vector4f vm[4];
 
   Matrix4f() {
-    int i;
     reset(0.0);
   }
 
@@ -64,6 +63,177 @@ public:
     m2.vm[3] = Vector4f(m1.vm[0].w, m1.vm[1].w, m1.vm[2].w, m1.vm[3].w);
 
     return(m2);
+  }
+
+  static float determinant(Matrix4f m1) {
+    float det = (
+       m1.vm[0].x * m1.vm[1].y * m1.vm[2].z * m1.vm[3].w) +
+      (m1.vm[0].x * m1.vm[1].z * m1.vm[2].w * m1.vm[3].y) +
+      (m1.vm[0].x * m1.vm[1].w * m1.vm[2].y * m1.vm[3].z) +
+      (m1.vm[0].y * m1.vm[1].x * m1.vm[2].w * m1.vm[3].z) +
+      (m1.vm[0].y * m1.vm[1].z * m1.vm[2].x * m1.vm[3].w) +
+      (m1.vm[0].y * m1.vm[1].w * m1.vm[2].z * m1.vm[3].x) +
+      (m1.vm[0].z * m1.vm[1].x * m1.vm[2].y * m1.vm[3].w) +
+      (m1.vm[0].z * m1.vm[1].y * m1.vm[2].w * m1.vm[3].x) +
+      (m1.vm[0].z * m1.vm[1].w * m1.vm[2].x * m1.vm[3].y) +
+      (m1.vm[0].w * m1.vm[1].x * m1.vm[2].z * m1.vm[3].y) +
+      (m1.vm[0].w * m1.vm[1].y * m1.vm[2].x * m1.vm[3].z) +
+      (m1.vm[0].w * m1.vm[1].z * m1.vm[2].y * m1.vm[3].x) -
+      (m1.vm[0].x * m1.vm[1].y * m1.vm[2].w * m1.vm[3].z) -
+      (m1.vm[0].x * m1.vm[1].z * m1.vm[2].y * m1.vm[3].w) -
+      (m1.vm[0].x * m1.vm[1].w * m1.vm[2].z * m1.vm[3].y) -
+      (m1.vm[0].y * m1.vm[1].x * m1.vm[2].z * m1.vm[3].w) -
+      (m1.vm[0].y * m1.vm[1].z * m1.vm[2].w * m1.vm[3].x) -
+      (m1.vm[0].y * m1.vm[1].w * m1.vm[2].x * m1.vm[3].z) -
+      (m1.vm[0].z * m1.vm[1].x * m1.vm[2].w * m1.vm[3].y) -
+      (m1.vm[0].z * m1.vm[1].y * m1.vm[2].x * m1.vm[3].w) -
+      (m1.vm[0].z * m1.vm[1].w * m1.vm[2].y * m1.vm[3].x) -
+      (m1.vm[0].w * m1.vm[1].x * m1.vm[2].y * m1.vm[3].z) -
+      (m1.vm[0].w * m1.vm[1].y * m1.vm[2].z * m1.vm[3].x) -
+      (m1.vm[0].w * m1.vm[1].z * m1.vm[2].x * m1.vm[3].y);
+    return det;
+  }
+
+  static Matrix4f inverse(Matrix4f m1) {
+    Matrix4f inv;
+    float det = determinant(m1);
+    if(det == 0) {
+      printf("Determinant was zero.\n");
+      return m1;
+    } else {
+      // printf("Before inverse:\n");
+      // printf("%f %f %f %f\n", m1.vm[0].x, m1.vm[0].y, m1.vm[0].z, m1.vm[0].w);
+      // printf("%f %f %f %f\n", m1.vm[1].x, m1.vm[1].y, m1.vm[1].z, m1.vm[1].w);
+      // printf("%f %f %f %f\n", m1.vm[2].x, m1.vm[2].y, m1.vm[2].z, m1.vm[2].w);
+      // printf("%f %f %f %f\n", m1.vm[3].x, m1.vm[3].y, m1.vm[3].z, m1.vm[3].w);
+
+      float b11 = ((m1.vm[1].y * m1.vm[2].z * m1.vm[3].w) +
+      (m1.vm[1].z * m1.vm[2].w * m1.vm[3].y) +
+      (m1.vm[1].w * m1.vm[2].y * m1.vm[3].z) -
+      (m1.vm[1].y * m1.vm[2].w * m1.vm[3].z) -
+      (m1.vm[1].z * m1.vm[2].y * m1.vm[3].w) -
+      (m1.vm[1].w * m1.vm[2].z * m1.vm[3].y));
+      float b12 = ((m1.vm[0].y * m1.vm[2].w * m1.vm[3].z) +
+      (m1.vm[0].z * m1.vm[2].y * m1.vm[3].w) +
+      (m1.vm[0].w * m1.vm[2].z * m1.vm[3].y) -
+      (m1.vm[0].y * m1.vm[2].z * m1.vm[3].w) -
+      (m1.vm[0].z * m1.vm[2].w * m1.vm[3].y) -
+      (m1.vm[0].w * m1.vm[2].y * m1.vm[3].z));
+      float b13 = ((m1.vm[0].y * m1.vm[1].z * m1.vm[3].w) +
+      (m1.vm[0].z * m1.vm[1].w * m1.vm[3].y) +
+      (m1.vm[0].w * m1.vm[1].y * m1.vm[3].z) -
+      (m1.vm[0].y * m1.vm[1].w * m1.vm[3].z) -
+      (m1.vm[0].z * m1.vm[1].y * m1.vm[3].w) -
+      (m1.vm[0].w * m1.vm[1].z * m1.vm[3].y));
+      float b14 = ((m1.vm[0].y * m1.vm[1].w * m1.vm[2].z) +
+      (m1.vm[0].z * m1.vm[1].y * m1.vm[2].w) +
+      (m1.vm[0].w * m1.vm[1].z * m1.vm[2].y) -
+      (m1.vm[0].y * m1.vm[1].z * m1.vm[2].w) -
+      (m1.vm[0].z * m1.vm[1].w * m1.vm[2].y) -
+      (m1.vm[0].w * m1.vm[1].y * m1.vm[2].z));
+      float b21 = ((m1.vm[1].x * m1.vm[2].w * m1.vm[3].z) +
+      (m1.vm[1].z * m1.vm[2].x * m1.vm[3].w) +
+      (m1.vm[1].w * m1.vm[2].z * m1.vm[3].x) -
+      (m1.vm[1].x * m1.vm[2].z * m1.vm[3].w) -
+      (m1.vm[1].z * m1.vm[2].w * m1.vm[3].x) -
+      (m1.vm[1].w * m1.vm[2].x * m1.vm[3].z));
+      float b22 = ((m1.vm[0].x * m1.vm[2].z * m1.vm[3].w) +
+      (m1.vm[0].z * m1.vm[2].w * m1.vm[3].x) +
+      (m1.vm[0].w * m1.vm[2].x * m1.vm[3].z) -
+      (m1.vm[0].x * m1.vm[2].w * m1.vm[3].z) -
+      (m1.vm[0].z * m1.vm[2].x * m1.vm[3].w) -
+      (m1.vm[0].w * m1.vm[2].z * m1.vm[3].x));
+      float b23 = ((m1.vm[0].x * m1.vm[1].w * m1.vm[3].z) +
+      (m1.vm[0].z * m1.vm[1].x * m1.vm[3].w) +
+      (m1.vm[0].w * m1.vm[1].z * m1.vm[3].x) -
+      (m1.vm[0].x * m1.vm[1].z * m1.vm[3].w) -
+      (m1.vm[0].z * m1.vm[1].w * m1.vm[3].x) -
+      (m1.vm[0].w * m1.vm[1].x * m1.vm[3].z));
+      float b24 = ((m1.vm[0].x * m1.vm[1].z * m1.vm[2].w) +
+      (m1.vm[0].z * m1.vm[1].w * m1.vm[2].x) +
+      (m1.vm[0].w * m1.vm[1].x * m1.vm[2].z) -
+      (m1.vm[0].x * m1.vm[1].w * m1.vm[2].z) -
+      (m1.vm[0].z * m1.vm[1].x * m1.vm[2].w) -
+      (m1.vm[0].w * m1.vm[1].z * m1.vm[2].x));
+      float b31 = ((m1.vm[1].x * m1.vm[2].y * m1.vm[3].w) +
+      (m1.vm[1].y * m1.vm[2].w * m1.vm[3].x) +
+      (m1.vm[1].w * m1.vm[2].x * m1.vm[3].y) -
+      (m1.vm[1].x * m1.vm[2].w * m1.vm[3].y) -
+      (m1.vm[1].y * m1.vm[2].x * m1.vm[3].w) -
+      (m1.vm[1].w * m1.vm[2].y * m1.vm[3].x));
+      float b32 = ((m1.vm[0].x * m1.vm[2].w * m1.vm[3].y) +
+      (m1.vm[0].y * m1.vm[2].x * m1.vm[3].w) +
+      (m1.vm[0].w * m1.vm[2].y * m1.vm[3].x) -
+      (m1.vm[0].x * m1.vm[2].y * m1.vm[3].w) -
+      (m1.vm[0].y * m1.vm[2].w * m1.vm[3].x) -
+      (m1.vm[0].w * m1.vm[2].x * m1.vm[3].y));
+      float b33 = ((m1.vm[0].x * m1.vm[1].y * m1.vm[3].w) +
+      (m1.vm[0].y * m1.vm[1].w * m1.vm[3].x) +
+      (m1.vm[0].w * m1.vm[1].x * m1.vm[3].y) -
+      (m1.vm[0].x * m1.vm[1].w * m1.vm[3].y) -
+      (m1.vm[0].y * m1.vm[1].x * m1.vm[3].w) -
+      (m1.vm[0].w * m1.vm[1].y * m1.vm[3].x));
+      float b34 = ((m1.vm[0].x * m1.vm[1].w * m1.vm[2].y) +
+      (m1.vm[0].y * m1.vm[1].x * m1.vm[2].w) +
+      (m1.vm[0].w * m1.vm[1].y * m1.vm[2].x) -
+      (m1.vm[0].x * m1.vm[1].y * m1.vm[2].w) -
+      (m1.vm[0].y * m1.vm[1].w * m1.vm[2].x) -
+      (m1.vm[0].w * m1.vm[1].x * m1.vm[2].y));
+      float b41 = ((m1.vm[1].x * m1.vm[2].z * m1.vm[3].y) +
+      (m1.vm[1].y * m1.vm[2].x * m1.vm[3].z) +
+      (m1.vm[1].z * m1.vm[2].y * m1.vm[3].x) -
+      (m1.vm[1].x * m1.vm[2].y * m1.vm[3].z) -
+      (m1.vm[1].y * m1.vm[2].z * m1.vm[3].x) -
+      (m1.vm[1].z * m1.vm[2].x * m1.vm[3].y));
+      float b42 = ((m1.vm[0].x * m1.vm[2].y * m1.vm[3].z) +
+      (m1.vm[0].y * m1.vm[2].z * m1.vm[3].x) +
+      (m1.vm[0].z * m1.vm[2].x * m1.vm[3].y) -
+      (m1.vm[0].x * m1.vm[2].z * m1.vm[3].y) -
+      (m1.vm[0].y * m1.vm[2].x * m1.vm[3].z) -
+      (m1.vm[0].z * m1.vm[2].y * m1.vm[3].x));
+      float b43 = ((m1.vm[0].x * m1.vm[1].z * m1.vm[3].y) +
+      (m1.vm[0].y * m1.vm[1].x * m1.vm[3].z) +
+      (m1.vm[0].z * m1.vm[1].y * m1.vm[3].x) -
+      (m1.vm[0].x * m1.vm[1].y * m1.vm[3].z) -
+      (m1.vm[0].y * m1.vm[1].z * m1.vm[3].x) -
+      (m1.vm[0].z * m1.vm[1].x * m1.vm[3].y));
+      float b44 = ((m1.vm[0].x * m1.vm[1].y * m1.vm[2].z) +
+      (m1.vm[0].y * m1.vm[1].z * m1.vm[2].x) +
+      (m1.vm[0].z * m1.vm[1].x * m1.vm[2].y) -
+      (m1.vm[0].x * m1.vm[1].z * m1.vm[2].y) -
+      (m1.vm[0].y * m1.vm[1].x * m1.vm[2].z) -
+      (m1.vm[0].z * m1.vm[1].y * m1.vm[2].x));
+
+      inv.vm[0].x = b11;
+      inv.vm[0].y = b12;
+      inv.vm[0].z = b13;
+      inv.vm[0].w = b14;
+
+      inv.vm[1].x = b21;
+      inv.vm[1].y = b22;
+      inv.vm[1].z = b23;
+      inv.vm[1].w = b24;
+
+      inv.vm[2].x = b31;
+      inv.vm[2].y = b32;
+      inv.vm[2].z = b33;
+      inv.vm[2].w = b34;
+
+      inv.vm[3].x = b41;
+      inv.vm[3].y = b42;
+      inv.vm[3].z = b43;
+      inv.vm[3].w = b44;
+
+      inv = inv * (1.0 / det);
+
+      // printf("Result:\n");
+      // printf("%f %f %f %f\n", inv.vm[0].x, inv.vm[0].y, inv.vm[0].z, inv.vm[0].w);
+      // printf("%f %f %f %f\n", inv.vm[1].x, inv.vm[1].y, inv.vm[1].z, inv.vm[1].w);
+      // printf("%f %f %f %f\n", inv.vm[2].x, inv.vm[2].y, inv.vm[2].z, inv.vm[2].w);
+      // printf("%f %f %f %f\n", inv.vm[3].x, inv.vm[3].y, inv.vm[3].z, inv.vm[3].w);
+
+      return inv;
+    }
   }
 
   /**

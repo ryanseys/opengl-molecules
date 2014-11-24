@@ -33,7 +33,10 @@ char * Shader::readCode(char * fileName) {
     // check for error in file name
 
     fp = fopen(fileName, "r");	// open file and check for errors
-    if ( fp == NULL ) { return NULL; }
+    if ( fp == NULL ) {
+		printf("Error: could not open shader file.\n");
+		return NULL;
+	}
 
      // fine the length of code
     fseek(fp, 0L, SEEK_END);
@@ -67,7 +70,6 @@ int Shader::createShaderObj(char* fileName , int shaderType, GLuint *shaderid) {
 	char *code = NULL;
 	int rc = 0;
 
-
 	// create a shader handle
 	*shaderid = glCreateShader(shaderType);
 
@@ -79,7 +81,7 @@ int Shader::createShaderObj(char* fileName , int shaderType, GLuint *shaderid) {
 	glShaderSource(*shaderid, 1, &code, NULL);
 
 	// compile the code
-	glCompileShader(*shaderid);;
+	glCompileShader(*shaderid);
 
 	// check for errors
 	glGetShaderiv(*shaderid, GL_COMPILE_STATUS, &rc);
@@ -115,7 +117,6 @@ int Shader::createShaderObj(char* fileName , int shaderType, GLuint *shaderid) {
  * @return              0 if successful, -1 if error
  */
 GLint Shader::createShaderProgram(GLint vertShaderid, GLint fragShaderid, GLuint *shaderProgId) {
-
 	int rc = 0;
 	// get a handle to the shader program
 	shaderProgramid = glCreateProgram();
@@ -199,7 +200,7 @@ int Shader::shaderStatus(void) {
 
 	glGetProgramiv(shaderProgramid, GL_VALIDATE_STATUS , &rc);
 	if (rc == 0) {
-		fprintf(stderr,"shader is valid status = %d \n", rc);
+		printf("shader is valid status = %d \n", rc);
 	} else {
 		fprintf(stderr,"shader is not valid status = %d \n", rc);
 	}
@@ -215,6 +216,8 @@ int Shader::shaderStatus(void) {
 		glGetProgramInfoLog(shaderProgramid, 1024, &length, s);
 		fprintf(stderr,"shader info log = %s \n", s);
 	}
+
+	printf("Shading lang: %s\n", glGetString(GL_SHADING_LANGUAGE_VERSION));
 
 	glGetProgramiv(shaderProgramid, GL_ATTACHED_SHADERS, &rc);
 	fprintf(stderr,"shader number ofattached shaders= %d \n", rc);
