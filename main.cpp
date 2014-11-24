@@ -72,17 +72,17 @@ void display() {
   GLuint shininessLoc = glGetUniformLocation(shaderProg,  "shininess");
   glUniform1f(shininessLoc, shininess);
 
-  // GLuint spotPosLoc = glGetUniformLocation(shaderProg,  "spotPos");
-  // glUniform4fv(spotPosLoc, 1, (float *) &spotlight->position);
+  GLuint spotPosLoc = glGetUniformLocation(shaderProg,  "spotPos");
+  glUniform4fv(spotPosLoc, 1, (float *) &spotlight->position);
 
-  // GLuint spotLookAtLoc = glGetUniformLocation(shaderProg,  "spotLookAtPnt");
-  // glUniform4fv(spotLookAtLoc, 1, (float *) &spotlight->lookAtPoint);
+  GLuint spotLookAtLoc = glGetUniformLocation(shaderProg,  "spotLookAtPnt");
+  glUniform4fv(spotLookAtLoc, 1, (float *) &spotlight->lookAtPoint);
 
-  // GLuint spotAngAttenLoc = glGetUniformLocation(shaderProg,  "spotAngAtten");
-  // glUniform1f(spotAngAttenLoc, spotlight->angularAtten);
+  GLuint spotAngAttenLoc = glGetUniformLocation(shaderProg,  "spotAngAtten");
+  glUniform1f(spotAngAttenLoc, spotlight->angularAtten);
 
-  // GLuint spotConeAngleLoc = glGetUniformLocation(shaderProg,  "spotConeAngle");
-  // glUniform1f(spotConeAngleLoc, spotlight->coneAngle);
+  GLuint spotConeAngleLoc = glGetUniformLocation(shaderProg,  "spotConeAngle");
+  glUniform1f(spotConeAngleLoc, spotlight->coneAngle);
 
   // setting up the transformaiton of the object from model coord. system to world coord.
   Matrix4f worldMat = cam->getViewMatrix();
