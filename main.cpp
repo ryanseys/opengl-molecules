@@ -33,6 +33,9 @@ GLuint shaderProg;
 GLint windowHeight, windowWidth;
 std::vector<Atom> atom_list;
 
+GLfloat angularAtten = 55;
+GLfloat coneAngle = 40;
+
 float addShininess(GLfloat amount) {
   GLfloat SHINY_MIN = 0;
   GLfloat SHINY_MAX = 250;
@@ -136,6 +139,30 @@ void keyboardFunc(unsigned char key, int x, int y) {
       cam->moveForward(-FORWARD_AMT);
       break;
     }
+    case 'x': {
+      angularAtten++;
+      spotlight->setAngularAttenuation(angularAtten);
+      printf("angularAtten: %f\n", angularAtten);
+      break;
+    }
+    case 'z': {
+      angularAtten--;
+      spotlight->setAngularAttenuation(angularAtten);
+      printf("angularAtten: %f\n", angularAtten);
+      break;
+    }
+    case 'v': {
+      coneAngle++;
+      spotlight->setConeAngle(coneAngle);
+      printf("coneAngle: %f\n", coneAngle);
+      break;
+    }
+    case 'c': {
+      coneAngle--;
+      spotlight->setConeAngle(coneAngle);
+      printf("coneAngle: %f\n", coneAngle);
+      break;
+    }
     default: return;
   }
   glutPostRedisplay();
@@ -148,7 +175,7 @@ void pressSpecialKey(int key, int xx, int yy) {
       break;
     }
     case GLUT_KEY_DOWN: {
-      cam->yaw(-YAW_AMT);
+      cam->pitch(-PITCH_AMT);
       // cam->pitch(-PITCH_AMT);
       break;
     }
@@ -225,6 +252,8 @@ int main(int argc, char** argv) {
   spotlight->setDiffuse(1.0, 1.0, 1.0);
   spotlight->setSpecular(1.0, 1.0, 1.0);
   spotlight->setPosition(10, 10, 10);
+  spotlight->setAngularAttenuation(angularAtten);
+  spotlight->setConeAngle(coneAngle);
   spotlight->setLookAtPoint(0, 0, 0); // center of sphere
 
   glutPostRedisplay();
