@@ -19,7 +19,7 @@ public:
       case 'H':
         // hydrogen is white but not too white (so we make it light grey)
         this->sphere->setAmbient(0.5, 0.5, 0.5); // material ambient color
-        this->sphere->setDiffuse(0.5, 0.5, 0.5); // material diffuse color
+        this->sphere->setDiffuse(0.4, 0.4, 0.4); // material diffuse color
         this->sphere->setSpecular(0.1, 0.1, 0.1); // material specular color
         break;
       case 'C':
