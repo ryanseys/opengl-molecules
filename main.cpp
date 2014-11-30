@@ -199,13 +199,14 @@ int main(int argc, char** argv) {
     GLfloat y = atom.attribute("y3").as_float();
     GLfloat z = atom.attribute("z3").as_float();
 
+    char atomType = *atom.attribute("elementType").value();
+
     std::cout << "Element: " << atom.attribute("elementType").value();
     std::cout << ", X: " << x;
     std::cout << ", Y: " << y;
     std::cout << ", Z: " << z;
     std::cout << std::endl;
-
-    atom_list.push_back(Atom(ATOM_RADIUS, x, y, z));
+    atom_list.push_back(Atom(ATOM_RADIUS, x, y, z, atomType));
   }
 
   // Set up light
