@@ -28,6 +28,12 @@ public:
         this->sphere->setDiffuse(0.2, 0.2, 0.2); // material diffuse color
         this->sphere->setSpecular(0.1, 0.1, 0.1); // material specular color
         break;
+      case 'O':
+        // oxygen is red
+        this->sphere->setAmbient(1.0, 0.15, 0.15); // material ambient color
+        this->sphere->setDiffuse(1.0, 0.15, 0.15); // material diffuse color
+        this->sphere->setSpecular(1.0, 0.15, 0.15); // material specular color
+        break;
       default:
         this->sphere->setAmbient(1.0, 0.0, 0.2); // material ambient color
         this->sphere->setDiffuse(1.0, 1.0, 0.5); // material diffuse color
