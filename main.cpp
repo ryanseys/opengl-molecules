@@ -9,6 +9,7 @@
 #include "ryan_camera.h"
 #include "ryan_matrix.h"
 #include "ryan_light.h"
+#include "cylinder.h"
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
@@ -20,6 +21,8 @@ const GLfloat ATOM_RADIUS = 0.9;
 Vector3f position (10, 10, 10);
 Vector3f lookAtPoint(0, 0, 0);
 Vector3f upVector(0, 1, 0);
+
+Cylinder * cyl;
 
 Camera * cam;
 
@@ -97,6 +100,8 @@ void display() {
   for(std::vector<Atom>::iterator atom = atom_list.begin(); atom != atom_list.end(); ++atom) {
     atom->draw(shaderProg);
   }
+
+  cyl->draw(shaderProg);
 
   glUseProgram(0);
   glFlush();
@@ -235,6 +240,12 @@ int main(int argc, char** argv) {
     std::cout << std::endl;
     atom_list.push_back(Atom(ATOM_RADIUS, x, y, z, atomType));
   }
+
+  cyl = new Cylinder(100);
+
+  cyl->setAmbient(0.5, 0.2, 0.3);
+  cyl->setDiffuse(0.4, 0.5, 0.7);
+  cyl->setSpecular(0.3, 0.4, 1.0);
 
   // Set up light
   light = new Light();
