@@ -36,6 +36,7 @@ public:
   int changeAbsPosition(float x, float y, float z);    // change to a new position in space
   int changeAbsPosition(Vector3f *v);         // change to a new position in space
   Vector3f moveForward(float numUnits);  // moves the camera forward by the numUnits units along the lookAtVector
+  Vector3f moveRight(float numUnits);
   // void setCamera(Vector3f position, Vector3f lookAtPoint, Vector3f upVector);
   int updateSpeed(float speed);
   float getSpeed(void);

@@ -163,6 +163,14 @@ Vector3f Camera::moveForward(float numUnits) {
   return position;
 }
 
+Vector3f Camera::moveRight(float numUnits) {
+  this->position = position + (rightVector * numUnits);
+
+  this->refresh();
+
+  return position;
+}
+
 /**
  * Obtains the view transformation matrix.
  *

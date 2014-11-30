@@ -12,7 +12,8 @@
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
-const GLfloat FORWARD_AMT = 10;
+const GLfloat FORWARD_AMT = 2;
+const GLfloat RIGHT_AMT = 0.5;
 const GLfloat TIMER_TICK = 20; // milliseconds
 const GLfloat ATOM_RADIUS = 0.9;
 
@@ -115,14 +116,14 @@ void keyboardFunc(unsigned char key, int x, int y) {
       // Roll camera counter-clockwise
       // Yes, this is backward (i.e. -PITCH_AMT vs. PITCH_AMT to the assignment
       // description but it makes more sense when using the keyboard controls.
-      cam->roll(-PITCH_AMT);
+      cam->moveRight(-RIGHT_AMT);
       break;
     }
     case 'd': {
       // Roll camera counter-clockwise
       // Yes, this is backward (i.e. PITCH_AMT vs. -PITCH_AMT to the assignment
       // description but it makes more sense when using the keyboard controls.
-      cam->roll(PITCH_AMT);
+      cam->moveRight(RIGHT_AMT);
       break;
     }
     case 'w': {
@@ -147,15 +148,19 @@ void pressSpecialKey(int key, int xx, int yy) {
       break;
     }
     case GLUT_KEY_DOWN: {
-      cam->pitch(-PITCH_AMT);
+      cam->yaw(-YAW_AMT);
+      // cam->pitch(-PITCH_AMT);
       break;
     }
     case GLUT_KEY_RIGHT: {
       cam->yaw(YAW_AMT);
+      // cam->roll(PITCH_AMT);
       break;
     }
     case GLUT_KEY_LEFT: {
       cam->yaw(-YAW_AMT);
+      // cam->roll(PITCH_AMT);
+
       break;
     }
   }
@@ -205,6 +210,7 @@ int main(int argc, char** argv) {
 
   // Set up light
   light = new Light();
+
   // white light
   light->setAmbient(1.0, 1.0, 1.0);
   light->setDiffuse(1.0, 1.0, 1.0);

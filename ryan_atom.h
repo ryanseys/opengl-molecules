@@ -21,11 +21,15 @@ public:
     // destructor
   }
 
-  void draw(GLuint shaderProg) {
-    this->translate(this->x, this->y, this->z);
+  void setColors() {
     this->sphere->setAmbient(1.0, 0.0, 0.2); // material ambient color
     this->sphere->setDiffuse(1.0, 1.0, 0.5); // material diffuse color
     this->sphere->setSpecular(0.8, 0.8, 0.8); // material specular color
+  }
+
+  void draw(GLuint shaderProg) {
+    this->translate(this->x, this->y, this->z);
+    this->setColors();
     this->sphere->drawSphere(shaderProg);
   }
 
