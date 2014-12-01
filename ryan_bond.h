@@ -21,7 +21,7 @@ public:
     this->cyl = new Cylinder(30);
     this->x = (a2->x + a1->x)/2.0;
     this->y = (a2->y + a1->y)/2.0;
-    this->z = (a2->z + a2->z)/2.0;
+    this->z = (a2->z + a1->z)/2.0;
   }
 
   ~Bond() {
@@ -35,10 +35,12 @@ public:
 
     this->translate(this->x, this->y, this->z);
 
-    // This is the default direction for the cylinder
-    Vector3f z(0, 1.0, 0);
     // Get diff between two points (line the cylinder should follow)
     Vector3f p(a2->x - a1->x, a2->y - a1->y, a2->z - a1->z);
+
+    // This is the default direction for the cylinder
+    Vector3f z(0, 1.0, 0);
+
     // Get cross product (the axis of rotation)
     Vector3f t = Vector3f::cross(z, Vector3f::normalize(p));
 

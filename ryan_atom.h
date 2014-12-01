@@ -59,6 +59,10 @@ public:
     this->radius = r;
   }
 
+  float getRadius() {
+    return radius;
+  }
+
   void rotateX(GLfloat angle, int degrees) {
     this->sphere->rotateX(angle, degrees);
   }
