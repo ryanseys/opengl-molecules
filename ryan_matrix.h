@@ -321,7 +321,7 @@ public:
   static Matrix4f rotateRollPitchYaw(float angleRoll, float anglePitch, float angleYaw, int degree) {
     Matrix4f m1;
     m1 = identity();
-    m1=rotateY(angleYaw, degree)*rotateX(anglePitch, degree)*rotateZ(angleRoll, degree);
+    m1 = rotateY(angleYaw, degree) * rotateX(anglePitch, degree) * rotateZ(angleRoll, degree);
 
     return(m1);
   }
@@ -336,14 +336,33 @@ public:
    * @param  degree   [description]
    * @return          [description]
    */
-  static Matrix4f rotateVector(Vector3f, float angle, int degree) {
-    Matrix4f m1;
-    m1 = identity();
+  static Matrix4f rotateVector( Vector3f u, float angle, bool isDegree = true)
+  {
+    u.normalize();
+    if (isDegree) angle = DegreeToRadians(angle);
+        float x = u.x;
+        float y = u.y;
+        float z = u.z;
+        float c = cosf( angle );
+        float s = sinf( angle );
 
-    // TODO: ADD CODE
-
-    return(m1);
+        Matrix4f m1;
+        m1 = identity();
+        m1.vm[0] = Vector4f( c + x*x*(1-c),     x*y*(1-c) - z*s,    x*z*(1-c) + y*s,    0);
+        m1.vm[1] = Vector4f( x*y*(1-c) + z*s,   c + y*y*(1-c),      y*z*(1-c) - x*s,    0);
+        m1.vm[2] = Vector4f( z*x*(1-c) - y*s,   z*y*(1-c) + x*s,    c + z*z*(1-c),      0);
+        m1.vm[3] = Vector4f( 0,                 0,                  0,                  1);
+        return(m1);
   }
+
+  // static Matrix4f rotateAroundTwoPoints(Vector3f p1, Vector3f p2) {
+  //   Matrix4f m1;
+  //   m1 = identity();
+
+  //   m1 = translation(-p1.x, -p1.y, -p1.z);
+
+  //   return(m1);
+  // }
 
   /**
    * set the matrix as a rotation around a vector where only a rotation vector

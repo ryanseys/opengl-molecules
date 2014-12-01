@@ -44,14 +44,14 @@
     <bond atomRefs2="a5 a7" order="1"/>
     <bond atomRefs2="a7 a8" order="1"/>
     <bond atomRefs2="a8 a9" order="2"/>
-    <bond atomRefs2="a9 a6" order="1"/>
+    <bond atomRefs2="a9 a6" order="1"/> <!-- rough-->
     <bond atomRefs2="a3 a10" order="1"/>
     <bond atomRefs2="a2 a11" order="2"/>
     <bond atomRefs2="a4 a12" order="2"/>
     <bond atomRefs2="a7 a13" order="1"/>
     <bond atomRefs2="a1 a14" order="1"/>
     <bond atomRefs2="a8 a15" order="1"/>
-    <bond atomRefs2="a10 a16" order="1"/>
+    <bond atomRefs2="a10 a16" order="1"/> <!-- bad -->
     <bond atomRefs2="a10 a17" order="1"/>
     <bond atomRefs2="a10 a18" order="1"/>
     <bond atomRefs2="a13 a19" order="1"/>

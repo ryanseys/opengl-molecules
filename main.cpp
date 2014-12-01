@@ -17,11 +17,13 @@ const GLfloat YAW_AMT = 1.0; // degrees right and left
 const GLfloat FORWARD_AMT = 2;
 const GLfloat RIGHT_AMT = 0.5;
 const GLfloat TIMER_TICK = 20; // milliseconds
-const GLfloat ATOM_RADIUS = 0.9;
+const GLfloat ATOM_RADIUS = 0.7;
 
 Vector3f position (10, 10, 10);
 Vector3f lookAtPoint(0, 0, 0);
 Vector3f upVector(0, 1, 0);
+
+GLfloat rotateAngle = 0;
 
 Camera * cam;
 
@@ -101,6 +103,10 @@ void display() {
     atom->draw(shaderProg);
   }
 
+  for(std::vector<Bond>::iterator bond = bond_list.begin(); bond != bond_list.end(); ++bond) {
+    bond->draw(shaderProg, rotateAngle);
+  }
+
   // cyl->draw(shaderProg);
 
   glUseProgram(0);
@@ -166,6 +172,12 @@ void keyboardFunc(unsigned char key, int x, int y) {
       coneAngle--;
       spotlight->setConeAngle(coneAngle);
       printf("coneAngle: %f\n", coneAngle);
+      break;
+    }
+
+    case 'm': {
+      rotateAngle+=0.1;
+      printf("rotateAngle: %f\n", rotateAngle);
       break;
     }
     default: return;
@@ -262,7 +274,7 @@ int main(int argc, char** argv) {
 
     int order = bond.attribute("order").as_int();
 
-    Bond tempBond(atom_map.find(token1)->second, atom_map.find(token2)->second);
+    Bond tempBond(& atom_map.find(token1)->second, & atom_map.find(token2)->second);
 
     bond_list.push_back(tempBond);
 

@@ -97,14 +97,20 @@ public:
    *
    * @param degrees Degrees to rotate it.
    */
-  void rotateY(GLfloat degrees) {
-    Matrix4f tempRot = Matrix4f::rotateY(degrees, true);
+  void rotateY(GLfloat angle, GLuint deg) {
+    Matrix4f tempRot = Matrix4f::rotateY(angle, deg);
     rotMat = rotMat * tempRot;
     modelMat = modelMat * tempRot;
   }
 
-  void rotateX(GLfloat degrees) {
-    Matrix4f tempRot = Matrix4f::rotateX(degrees, true);
+  void rotateX(GLfloat angle, GLuint deg) {
+    Matrix4f tempRot = Matrix4f::rotateX(angle, deg);
+    rotMat = rotMat * tempRot;
+    modelMat = modelMat * tempRot;
+  }
+
+  void rotateZ(GLfloat angle, GLuint deg) {
+    Matrix4f tempRot = Matrix4f::rotateZ(angle, deg);
     rotMat = rotMat * tempRot;
     modelMat = modelMat * tempRot;
   }
@@ -138,7 +144,7 @@ public:
    */
   void draw(GLuint shaderProg) {
     Matrix4f normalMat = Matrix4f::transpose(Matrix4f::inverse(this->rotMat));
-    modelMat = modelMat * Matrix4f::scale(4, 4, 4);
+    // modelMat = modelMat * Matrix4f::scale(4, 4, 4);
 
     GLuint modelLoc = glGetUniformLocation(shaderProg,  "modelMat");
     glUniformMatrix4fv(modelLoc, 1, 1, (float *) modelMat.vm);
@@ -180,6 +186,10 @@ public:
 
   void translate(GLfloat x, GLfloat y, GLfloat z) {
     modelMat = modelMat * Matrix4f::translation(x, y, z);
+  }
+
+  void rotateVector(Vector3f v, float deg) {
+    modelMat = modelMat * Matrix4f::rotateVector(v, deg, 1);
   }
 
   void setAmbient(GLfloat r, GLfloat g, GLfloat b) {
