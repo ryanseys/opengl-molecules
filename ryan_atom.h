@@ -7,8 +7,9 @@
 class Atom {
 protected:
   SolidSphere * sphere;
-  GLfloat x, y, z, radius;
+  GLfloat radius;
 public:
+  GLfloat x, y, z;
   Atom(GLfloat radius, GLfloat x, GLfloat y, GLfloat z, char type) {
     sphere = new SolidSphere(radius, 60, 60);
     this->radius = radius;

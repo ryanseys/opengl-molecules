@@ -2,6 +2,7 @@
 #include <cmath>
 #include "math.h"
 #include <iostream>
+#include <map>
 #include "pugixml.hpp"
 #include "Shader.h"
 #include "ryan_atom.h"
@@ -9,7 +10,7 @@
 #include "ryan_camera.h"
 #include "ryan_matrix.h"
 #include "ryan_light.h"
-#include "cylinder.h"
+#include "ryan_bond.h"
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
@@ -22,8 +23,6 @@ Vector3f position (10, 10, 10);
 Vector3f lookAtPoint(0, 0, 0);
 Vector3f upVector(0, 1, 0);
 
-Cylinder * cyl;
-
 Camera * cam;
 
 Light * light;
@@ -35,6 +34,7 @@ GLfloat SHINY_FACTOR = 5.0;
 GLuint shaderProg;
 GLint windowHeight, windowWidth;
 std::vector<Atom> atom_list;
+std::vector<Bond> bond_list;
 
 GLfloat angularAtten = 55;
 GLfloat coneAngle = 40;
@@ -53,7 +53,7 @@ float addShininess(GLfloat amount) {
 
 void display() {
   glEnable(GL_DEPTH_TEST);
-  glClearColor(0.0, 0.0, 0,1);
+  glClearColor(1.0, 1.0, 1.0, 1);
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
   glUseProgram(shaderProg);
@@ -97,11 +97,11 @@ void display() {
   /**
    * Go through each atom and draw it.
    */
-  // for(std::vector<Atom>::iterator atom = atom_list.begin(); atom != atom_list.end(); ++atom) {
-  //   atom->draw(shaderProg);
-  // }
+  for(std::vector<Atom>::iterator atom = atom_list.begin(); atom != atom_list.end(); ++atom) {
+    atom->draw(shaderProg);
+  }
 
-  cyl->draw(shaderProg);
+  // cyl->draw(shaderProg);
 
   glUseProgram(0);
   glFlush();
@@ -225,11 +225,15 @@ int main(int argc, char** argv) {
 
   cam = new Camera(position, lookAtPoint, upVector);
 
+  std::map<std::string, Atom> atom_map;
+
+  // parse all atoms
   pugi::xml_node atoms = doc.child("molecule").child("atomArray");
   for (pugi::xml_node atom = atoms.child("atom"); atom; atom = atom.next_sibling("atom")) {
     GLfloat x = atom.attribute("x3").as_float();
     GLfloat y = atom.attribute("y3").as_float();
     GLfloat z = atom.attribute("z3").as_float();
+    std::string id = atom.attribute("id").as_string();
 
     char atomType = *atom.attribute("elementType").value();
 
@@ -238,14 +242,34 @@ int main(int argc, char** argv) {
     std::cout << ", Y: " << y;
     std::cout << ", Z: " << z;
     std::cout << std::endl;
-    atom_list.push_back(Atom(ATOM_RADIUS, x, y, z, atomType));
+
+    Atom tempAtom(ATOM_RADIUS, x, y, z, atomType);
+    atom_map.insert(std::pair<std::string, Atom>(id, tempAtom));
+    atom_list.push_back(tempAtom);
   }
 
-  cyl = new Cylinder(100);
+  // parse all bonds
+  pugi::xml_node bonds = doc.child("molecule").child("bondArray");
+  for (pugi::xml_node bond = bonds.child("bond"); bond; bond = bond.next_sibling("bond")) {
+    std::string refAtoms = bond.attribute("atomRefs2").as_string();
 
-  cyl->setAmbient(0.5, 0.2, 0.3);
-  cyl->setDiffuse(0.4, 0.5, 0.7);
-  cyl->setSpecular(0.3, 0.4, 1.0);
+    // std::string s = "scott>=tiger>=mushroom";
+    std::string delimiter = " ";
+
+    int end = refAtoms.find(delimiter, 0);
+    std::string token1 = refAtoms.substr(0, end);
+    std::string token2 = refAtoms.substr(end+1, refAtoms.find(delimiter, refAtoms.length()-1));
+
+    int order = bond.attribute("order").as_int();
+
+    Bond tempBond(atom_map.find(token1)->second, atom_map.find(token2)->second);
+
+    bond_list.push_back(tempBond);
+
+    std::cout << "Bond: " << refAtoms;
+    std::cout << ", order: " << order;
+    std::cout << std::endl;
+  }
 
   // Set up light
   light = new Light();
