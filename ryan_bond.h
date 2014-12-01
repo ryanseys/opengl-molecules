@@ -53,6 +53,10 @@ public:
     this->cyl->draw(shaderProg);
   }
 
+  void rotateY(GLfloat angle, int degrees) {
+    this->cyl->rotateY(angle, degrees);
+  }
+
   void translate(GLfloat x, GLfloat y, GLfloat z) {
     this->cyl->translate(x, y, z);
   }

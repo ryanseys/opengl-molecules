@@ -24,6 +24,7 @@ Vector3f lookAtPoint(0, 0, 0);
 Vector3f upVector(0, 1, 0);
 
 GLfloat rotateAngle = 0;
+GLfloat rotateMoleculeX = 0;
 
 Camera * cam;
 
@@ -100,10 +101,12 @@ void display() {
    * Go through each atom and draw it.
    */
   for(std::vector<Atom>::iterator atom = atom_list.begin(); atom != atom_list.end(); ++atom) {
+    atom->rotateY(rotateMoleculeX, 0);
     atom->draw(shaderProg);
   }
 
   for(std::vector<Bond>::iterator bond = bond_list.begin(); bond != bond_list.end(); ++bond) {
+    bond->rotateY(rotateMoleculeX, 0);
     bond->draw(shaderProg, rotateAngle);
   }
 
@@ -193,29 +196,27 @@ void pressSpecialKey(int key, int xx, int yy) {
     }
     case GLUT_KEY_DOWN: {
       cam->pitch(-PITCH_AMT);
-      // cam->pitch(-PITCH_AMT);
       break;
     }
     case GLUT_KEY_RIGHT: {
       cam->yaw(YAW_AMT);
-      // cam->roll(PITCH_AMT);
       break;
     }
     case GLUT_KEY_LEFT: {
       cam->yaw(-YAW_AMT);
-      // cam->roll(PITCH_AMT);
       break;
     }
   }
   glutPostRedisplay();
 }
 
+int xStart, yStart;
 int xLast, yLast;
 int valid = 0;
 
 void mouseButton(int button, int state, int x, int y) {
-  xLast = x;
-  yLast = y;
+  xLast = xStart = x;
+  yLast = yStart = y;
   valid = state == GLUT_DOWN;
 }
 
@@ -223,8 +224,11 @@ void mouseMove(int x, int y) {
   if (valid) {
     int dx = xLast - x;
     int dy = yLast - y;
-    cam->pitch(-dy*0.1);
-    cam->yaw(dx*0.1);
+    int totalX = xStart - x;
+    int totalY = yStart - y;
+    rotateMoleculeX = totalX * 0.01;
+    // cam->pitch(-dy*0.1);
+    // cam->yaw(dx*0.1);
   }
   xLast = x;
   yLast = y;
@@ -305,10 +309,6 @@ int main(int argc, char** argv) {
     std::cout << std::endl;
   }
 
-  Cylinder c(30);
-
-  c.draw(shaderProg);
-
   // Set up light
   light = new Light();
 
@@ -327,7 +327,7 @@ int main(int argc, char** argv) {
   spotlight->setPosition(10, 10, 10);
   spotlight->setAngularAttenuation(angularAtten);
   spotlight->setConeAngle(coneAngle);
-  spotlight->setLookAtPoint(0, 0, 0); // center of sphere
+  spotlight->setLookAtPoint(0, 0, 0);
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);

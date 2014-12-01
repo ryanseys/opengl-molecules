@@ -136,8 +136,8 @@ public:
    *
    * @param degrees Degrees to rotate it.
    */
-  void rotateY(GLfloat degrees) {
-    Matrix4f tempRot = Matrix4f::rotateY(degrees, true);
+  void rotateY(GLfloat angle, int degrees) {
+    Matrix4f tempRot = Matrix4f::rotateY(angle, degrees);
     rotMat = rotMat * tempRot;
     modelMat = modelMat * tempRot;
   }
