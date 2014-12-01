@@ -8,7 +8,6 @@
 #ifndef RYAN_CYLINDER
 #define RYAN_CYLINDER
 #include <stdlib.h>
-#include <iostream>
 #include <cmath>
 #include "ryan_vector.h"
 #include "ryan_matrix.h"
@@ -17,19 +16,19 @@
 
 struct Vertex{
     Vertex(){}
-    Vertex( const Vector3f& _pos ){
+    Vertex( const Vector3f& _pos, const Vector3f& _nor ){
         pos[0] = _pos.x;
         pos[1] = _pos.y;
         pos[2] = _pos.z;
         pos[3] = 1.0f;
-        col[0] = 1.0;
-        col[1] = 0.0;
-        col[2] = 0.0;
-        col[3] = 1.0f;
+        norm[0] = _nor.x;
+        norm[1] = _nor.y;
+        norm[2] = _nor.z;
+        norm[3] = 1.0f;
     }
 
     float pos[4];
-    float col[4];
+    float norm[4];
 };
 
 class Cylinder {
@@ -57,11 +56,11 @@ public:
     for( int s = 0; s < sectors; ++s ){
         float x = (float) cos( 2 * M_PI * s * S );
         float z = (float) sin( 2 * M_PI * s * S );
-        m_vertices[s]           = Vertex( Vector3f( x, 1.0f, z ) );
-        m_vertices[s+sectors]   = Vertex( Vector3f( x, -1.0f, z ) );
+        m_vertices[s]           = Vertex( Vector3f( x, 1.0f, z ), Vector3f( x, 1.0f, z ) );
+        m_vertices[s+sectors]   = Vertex( Vector3f( x, -1.0f, z ), Vector3f( x, 1.0f, z ) );
     }
-    m_vertices[sectors*2]           = Vertex( Vector3f( 0, 1.0f, 0 ));
-    m_vertices[sectors*2 + 1]       = Vertex( Vector3f( 0, -1.0f, 0 ));
+    m_vertices[sectors*2]           = Vertex( Vector3f( 0, 1.0f, 0 ), Vector3f( 0, 1.0f, 0 ));
+    m_vertices[sectors*2 + 1]       = Vertex( Vector3f( 0, -1.0f, 0 ), Vector3f( 0, -1.0f, 0 ));
 
     //create the indices
     i = 0;
@@ -164,13 +163,12 @@ public:
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_idxVbo);
 
-    glVertexAttribPointer( vtxLoc, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, pos));
-    glVertexAttribPointer(normalLoc, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, col));
+    glVertexAttribPointer(vtxLoc, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, pos));
+    glVertexAttribPointer(normalLoc, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, norm));
 
     //copy the vertex color
     // GLint colLoc = glGetAttribLocation( shaderProg, "color");
     // glEnableVertexAttribArray( colLoc );
-
 
     glDrawElements( GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, NULL );
     this->clear();
