@@ -119,6 +119,7 @@ void display() {
 }
 
 void reshape(GLint w, GLint h) {
+  glViewport(0, 0, (GLsizei) w, (GLsizei) h);
   cam->reshape(w, h);
 }
 

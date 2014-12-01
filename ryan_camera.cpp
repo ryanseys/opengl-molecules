@@ -40,6 +40,7 @@ Camera::Camera(Vector3f posVec, Vector3f lookAtPoint, Vector3f upVec) {
  */
 void Camera::reshape(GLfloat w, GLfloat h) {
   this->projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, w/h, 1.0, 1000);
+  this->refresh();
 }
 
 /**

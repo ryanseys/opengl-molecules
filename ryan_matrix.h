@@ -313,7 +313,6 @@ public:
     return(m1);
   }
 
-
   // set the matrix as a roll pitch and yaw rotation matrix
   // the resulting matrix M=Mat(yaw)*mat(pitch)*mat(roll)
   // if degree is true (!=0) then all angles are given in degrees
