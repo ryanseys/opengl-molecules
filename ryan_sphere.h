@@ -175,7 +175,7 @@ public:
    * Draw the sphere using the supplied shaderProgram.
    * @param shaderProg Shader program to use.
    */
-  void drawSphere(GLuint shaderProg) {
+  void draw(GLuint shaderProg) {
     Matrix4f normalMat = Matrix4f::transpose(Matrix4f::inverse(this->rotMat));
     modelMat = modelMat * Matrix4f::scale(radius, radius, radius);
 

@@ -158,15 +158,19 @@ public:
 
     //copy the vertex position
     GLint vtxLoc = glGetAttribLocation( shaderProg, "vPosition");
+    GLuint normalLoc = glGetAttribLocation(shaderProg, "vNormal");
     glEnableVertexAttribArray( vtxLoc );
+    glEnableVertexAttribArray(normalLoc);
     glBindBuffer(GL_ARRAY_BUFFER, m_vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_idxVbo);
+
     glVertexAttribPointer( vtxLoc, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, pos));
+    glVertexAttribPointer(normalLoc, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, col));
 
     //copy the vertex color
-    GLint colLoc = glGetAttribLocation( shaderProg, "color");
-    glEnableVertexAttribArray( colLoc );
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_idxVbo);
-    glVertexAttribPointer( colLoc, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, col));
+    // GLint colLoc = glGetAttribLocation( shaderProg, "color");
+    // glEnableVertexAttribArray( colLoc );
+
 
     glDrawElements( GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, NULL );
     this->clear();

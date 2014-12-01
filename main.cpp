@@ -97,9 +97,9 @@ void display() {
   /**
    * Go through each atom and draw it.
    */
-  for(std::vector<Atom>::iterator atom = atom_list.begin(); atom != atom_list.end(); ++atom) {
-    atom->draw(shaderProg);
-  }
+  // for(std::vector<Atom>::iterator atom = atom_list.begin(); atom != atom_list.end(); ++atom) {
+  //   atom->draw(shaderProg);
+  // }
 
   cyl->draw(shaderProg);
 

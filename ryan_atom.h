@@ -54,7 +54,7 @@ public:
 
   void draw(GLuint shaderProg) {
     this->translate(this->x, this->y, this->z);
-    this->sphere->drawSphere(shaderProg);
+    this->sphere->draw(shaderProg);
   }
 
   void translate(GLfloat x, GLfloat y, GLfloat z) {
