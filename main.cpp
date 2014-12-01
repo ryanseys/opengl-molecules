@@ -24,6 +24,7 @@ Vector3f lookAtPoint(0, 0, 0);
 Vector3f upVector(0, 1, 0);
 
 GLfloat rotateAngle = 0;
+GLfloat rotateMoleculeY = 0;
 GLfloat rotateMoleculeX = 0;
 
 Camera * cam;
@@ -94,23 +95,23 @@ void display() {
   GLuint spotConeAngleLoc = glGetUniformLocation(shaderProg,  "spotConeAngle");
   glUniform1f(spotConeAngleLoc, spotlight->coneAngle);
 
-  // setting up the transformaiton of the object from model coord. system to world coord.
+  // setting up the transformation of the object from model coord. system to world coord.
   Matrix4f worldMat = cam->getViewMatrix();
 
   /**
    * Go through each atom and draw it.
    */
   for(std::vector<Atom>::iterator atom = atom_list.begin(); atom != atom_list.end(); ++atom) {
-    atom->rotateY(rotateMoleculeX, 0);
+    atom->rotateY(rotateMoleculeY, 0);
+    atom->rotateX(rotateMoleculeX, 0);
     atom->draw(shaderProg);
   }
 
   for(std::vector<Bond>::iterator bond = bond_list.begin(); bond != bond_list.end(); ++bond) {
-    bond->rotateY(rotateMoleculeX, 0);
+    bond->rotateY(rotateMoleculeY, 0);
+    bond->rotateX(rotateMoleculeX, 0);
     bond->draw(shaderProg, rotateAngle);
   }
-
-  // cyl->draw(shaderProg);
 
   glUseProgram(0);
   glFlush();
@@ -215,8 +216,10 @@ int xLast, yLast;
 int valid = 0;
 
 void mouseButton(int button, int state, int x, int y) {
-  xLast = xStart = x;
-  yLast = yStart = y;
+  xLast = x;
+  yLast = y;
+  xStart = x;
+  yStart = y;
   valid = state == GLUT_DOWN;
 }
 
@@ -226,7 +229,8 @@ void mouseMove(int x, int y) {
     int dy = yLast - y;
     int totalX = xStart - x;
     int totalY = yStart - y;
-    rotateMoleculeX = totalX * 0.01;
+    rotateMoleculeY = -totalX * 0.01;
+    // rotateMoleculeX = totalY * 0.01;
     // cam->pitch(-dy*0.1);
     // cam->yaw(dx*0.1);
   }

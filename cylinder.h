@@ -12,8 +12,6 @@
 #include "ryan_vector.h"
 #include "ryan_matrix.h"
 
-// int numTriangles;
-
 struct Vertex{
     Vertex(){}
     Vertex( const Vector3f& _pos, const Vector3f& _nor ){
@@ -113,29 +111,6 @@ public:
     Matrix4f tempRot = Matrix4f::rotateZ(angle, deg);
     rotMat = rotMat * tempRot;
     modelMat = modelMat * tempRot;
-  }
-
-  /**
-   * Translate the sphere.
-   *
-   * @param x translation on x-axis
-   * @param y translation on y-axis
-   * @param z translation on z-axis
-   */
-  // void translate(GLfloat x, GLfloat y, GLfloat z) {
-  //   Matrix4f translateZMat = Matrix4f::translation(x, y, z);
-  //   this->applyTransformation(translateZMat);
-  // }
-
-  /**
-   * Adjust the pitch of the sphere by some amount
-   * @param degrees Degrees to adjust pitch.
-   */
-  void pitch(Vector3f position, GLfloat degrees) {
-    // modelMat = modelMat * Matrix4f::translation(position.x, position.y, position.z);
-    // modelMat = modelMat * Matrix4f::rotateRollPitchYaw(0.0, degrees, 0.0, true);
-    // rotMat = rotMat * Matrix4f::rotateRollPitchYaw(0.0, degrees, 0.0, true);
-    // modelMat = modelMat * Matrix4f::translation(-position.x, -position.y, -position.z);
   }
 
   /**

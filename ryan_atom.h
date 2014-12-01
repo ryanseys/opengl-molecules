@@ -19,6 +19,8 @@ public:
     switch(type) {
       case 'H':
         // hydrogen is white but not too white (so we make it light grey)
+        // this->scale(0.5);
+        // this->setRadius(0.5);
         this->sphere->setAmbient(0.5, 0.5, 0.5); // material ambient color
         this->sphere->setDiffuse(0.4, 0.4, 0.4); // material diffuse color
         this->sphere->setSpecular(0.1, 0.1, 0.1); // material specular color
@@ -53,12 +55,22 @@ public:
     // destructor
   }
 
+  void setRadius(GLfloat r) {
+    this->radius = r;
+  }
+
+  void rotateX(GLfloat angle, int degrees) {
+    this->sphere->rotateX(angle, degrees);
+  }
+
   void rotateY(GLfloat angle, int degrees) {
     this->sphere->rotateY(angle, degrees);
   }
 
   void draw(GLuint shaderProg) {
+
     this->translate(this->x, this->y, this->z);
+    // this->sphere->scale(radius, radius, radius);
     this->sphere->draw(shaderProg);
   }
 

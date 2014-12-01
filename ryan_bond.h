@@ -29,32 +29,34 @@ public:
   }
 
   void draw(GLuint shaderProg, GLfloat rotateAngle) {
-    this->cyl->setAmbient(0.5, 0.2, 0.3);
-    this->cyl->setDiffuse(0.4, 0.5, 0.7);
-    this->cyl->setSpecular(0.3, 0.4, 1.0);
+    this->cyl->setAmbient(0.5, 0.5, 0.5);
+    this->cyl->setDiffuse(0.4, 0.4, 0.4);
+    this->cyl->setSpecular(0.1, 0.1, 0.1);
 
     this->translate(this->x, this->y, this->z);
 
     // This is the default direction for the cylinder
-    Vector3f z = Vector3f(0, 1, 0);
+    Vector3f z(0, 1.0, 0);
     // Get diff between two points (line the cylinder should follow)
     Vector3f p(a2->x - a1->x, a2->y - a1->y, a2->z - a1->z);
     // Get cross product (the axis of rotation)
     Vector3f t = Vector3f::cross(z, Vector3f::normalize(p));
 
     // Get angle.
-    double angle = 180 / 3.14159 * acos(Vector3f::dot(z, p) / p.length());
+    double angle = 180.0 / M_PI * acos(Vector3f::dot(z, p) / p.length());
 
     // printf("Angle: %f\n", angle);
-    this->cyl->rotateVector(Vector3f(t.x, t.y, t.z), angle);
-
-    this->cyl->scale(0.17, 0.17, 0.17);
-    this->cyl->scale(1, p.length()*2, 1);
+    this->cyl->rotateVector(t, angle);
+    this->cyl->scale(0.17, p.length()*2*0.17, 0.17);
     this->cyl->draw(shaderProg);
   }
 
   void rotateY(GLfloat angle, int degrees) {
     this->cyl->rotateY(angle, degrees);
+  }
+
+  void rotateX(GLfloat angle, int degrees) {
+    this->cyl->rotateX(angle, degrees);
   }
 
   void translate(GLfloat x, GLfloat y, GLfloat z) {

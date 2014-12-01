@@ -142,23 +142,11 @@ public:
     modelMat = modelMat * tempRot;
   }
 
-  void rotateX(GLfloat degrees) {
-    Matrix4f tempRot = Matrix4f::rotateX(degrees, true);
+  void rotateX(GLfloat angle, int degrees) {
+    Matrix4f tempRot = Matrix4f::rotateX(angle, degrees);
     rotMat = rotMat * tempRot;
     modelMat = modelMat * tempRot;
   }
-
-  /**
-   * Translate the sphere.
-   *
-   * @param x translation on x-axis
-   * @param y translation on y-axis
-   * @param z translation on z-axis
-   */
-  // void translate(GLfloat x, GLfloat y, GLfloat z) {
-  //   Matrix4f translateZMat = Matrix4f::translation(x, y, z);
-  //   this->applyTransformation(translateZMat);
-  // }
 
   /**
    * Adjust the pitch of the sphere by some amount
@@ -177,6 +165,7 @@ public:
    */
   void draw(GLuint shaderProg) {
     Matrix4f normalMat = Matrix4f::transpose(Matrix4f::inverse(this->rotMat));
+    // this->translate(0, 0, 0.1);
     modelMat = modelMat * Matrix4f::scale(radius, radius, radius);
 
     GLuint modelLoc = glGetUniformLocation(shaderProg,  "modelMat");
