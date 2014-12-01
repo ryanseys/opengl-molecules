@@ -204,11 +204,30 @@ void pressSpecialKey(int key, int xx, int yy) {
     case GLUT_KEY_LEFT: {
       cam->yaw(-YAW_AMT);
       // cam->roll(PITCH_AMT);
-
       break;
     }
   }
   glutPostRedisplay();
+}
+
+int xLast, yLast;
+int valid = 0;
+
+void mouseButton(int button, int state, int x, int y) {
+  xLast = x;
+  yLast = y;
+  valid = state == GLUT_DOWN;
+}
+
+void mouseMove(int x, int y) {
+  if (valid) {
+    int dx = xLast - x;
+    int dy = yLast - y;
+    cam->pitch(-dy*0.1);
+    cam->yaw(dx*0.1);
+  }
+  xLast = x;
+  yLast = y;
 }
 
 int main(int argc, char** argv) {
@@ -232,6 +251,9 @@ int main(int argc, char** argv) {
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
   glutSpecialFunc(pressSpecialKey);
+
+  glutMouseFunc(mouseButton);
+  glutMotionFunc(mouseMove);
 
   s.createShaderProgram("phong.vert", "phong.frag", &shaderProg);
 
@@ -282,6 +304,10 @@ int main(int argc, char** argv) {
     std::cout << ", order: " << order;
     std::cout << std::endl;
   }
+
+  Cylinder c(30);
+
+  c.draw(shaderProg);
 
   // Set up light
   light = new Light();
