@@ -9,19 +9,18 @@
 
 class Bond {
 protected:
-  Cylinder * cyl;
+  Cylinder * cylinder;
   GLfloat x, y, z;
-  Vector3f *direction;
-  Atom * a1;
-  Atom * a2;
+  Atom * firstAtom;
+  Atom * secondAtom;
 public:
-  Bond(Atom *a1, Atom *a2) {
-    this->a1 = a1;
-    this->a2 = a2;
-    this->cyl = new Cylinder(30);
-    this->x = (a2->x + a1->x)/2.0;
-    this->y = (a2->y + a1->y)/2.0;
-    this->z = (a2->z + a1->z)/2.0;
+  Bond(Atom * firstAtom, Atom * secondAtom) {
+    this->firstAtom = firstAtom;
+    this->secondAtom = secondAtom;
+    this->cylinder = new Cylinder(30);
+    this->x = (secondAtom->x + firstAtom->x) / 2.0;
+    this->y = (secondAtom->y + firstAtom->y) / 2.0;
+    this->z = (secondAtom->z + firstAtom->z) / 2.0;
   }
 
   ~Bond() {
@@ -29,14 +28,18 @@ public:
   }
 
   void draw(GLuint shaderProg, GLfloat rotateAngle) {
-    this->cyl->setAmbient(0.5, 0.5, 0.5);
-    this->cyl->setDiffuse(0.4, 0.4, 0.4);
-    this->cyl->setSpecular(0.1, 0.1, 0.1);
+    this->cylinder->setAmbient(0.5, 0.5, 0.5);
+    this->cylinder->setDiffuse(0.4, 0.4, 0.4);
+    this->cylinder->setSpecular(0.1, 0.1, 0.1);
 
     this->translate(this->x, this->y, this->z);
 
     // Get diff between two points (line the cylinder should follow)
-    Vector3f p(a2->x - a1->x, a2->y - a1->y, a2->z - a1->z);
+    Vector3f p(
+      secondAtom->x - firstAtom->x,
+      secondAtom->y - firstAtom->y,
+      secondAtom->z - firstAtom->z
+    );
 
     // This is the default direction for the cylinder
     Vector3f z(0, 1.0, 0);
@@ -48,25 +51,25 @@ public:
     double angle = 180.0 / M_PI * acos(Vector3f::dot(z, p) / p.length());
 
     // printf("Angle: %f\n", angle);
-    this->cyl->rotateVector(t, angle);
-    this->cyl->scale(0.17, p.length()*2*0.17, 0.17);
-    this->cyl->draw(shaderProg);
+    this->cylinder->rotateVector(t, angle);
+    this->cylinder->scale(0.17, p.length() * 2 * 0.17, 0.17);
+    this->cylinder->draw(shaderProg);
   }
 
   void rotateY(GLfloat angle, int degrees) {
-    this->cyl->rotateY(angle, degrees);
+    this->cylinder->rotateY(angle, degrees);
   }
 
   void rotateX(GLfloat angle, int degrees) {
-    this->cyl->rotateX(angle, degrees);
+    this->cylinder->rotateX(angle, degrees);
   }
 
   void translate(GLfloat x, GLfloat y, GLfloat z) {
-    this->cyl->translate(x, y, z);
+    this->cylinder->translate(x, y, z);
   }
 
   void clear() {
-    this->cyl->clear();
+    this->cylinder->clear();
   }
 };
 

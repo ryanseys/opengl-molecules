@@ -27,6 +27,8 @@ GLfloat rotateAngle = 0;
 GLfloat rotateMoleculeY = 0;
 GLfloat rotateMoleculeX = 0;
 
+const char * DEFAULT_MOLECULE_FILE = "alpha-L-rhamnopyranose.cml";
+
 Camera * cam;
 
 Light * light;
@@ -241,7 +243,7 @@ void mouseMove(int x, int y) {
 
 int main(int argc, char** argv) {
   pugi::xml_document doc;
-  if (!doc.load_file("caffeine.cml")) return -1;
+  if (!doc.load_file(DEFAULT_MOLECULE_FILE)) return -1;
   std::string name = doc.child("molecule").child_value("name");
   std::cout << "Loaded molecule: " << doc.child("molecule").child_value("name") << std::endl;
 
