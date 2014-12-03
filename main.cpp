@@ -2,6 +2,7 @@
 #include <cmath>
 #include "math.h"
 #include <iostream>
+#include <fstream>
 #include <map>
 #include "pugixml.hpp"
 #include "Shader.h"
@@ -30,16 +31,7 @@ GLfloat rotateMoleculeY = 0;
 GLfloat rotateMoleculeX = 0;
 
 int moleculeFileIndex = 0;
-const int NUM_MOLECULES = 4;
-
-const char * moleculeFiles[NUM_MOLECULES] = {
-  "cmls/caffeine.cml",
-  "cmls/C60-buckminsterfullerene.cml",
-  "cmls/alpha-L-rhamnopyranose.cml",
-  "cmls/ethyl.cml"
-};
-
-std::vector<std::string> files(moleculeFiles, std::end(moleculeFiles));
+std::vector<std::string> files;
 
 Camera * cam;
 
@@ -62,6 +54,14 @@ std::vector<Bond> bond_list;
 GLfloat angularAtten = 55;
 GLfloat coneAngle = 40;
 
+void getMoleculeFiles() {
+  std::ifstream moleculeListFile("molecules_list.txt");
+  std::string line;
+  while (std::getline(moleculeListFile, line)) {
+    files.push_back(line);
+  }
+}
+
 float addShininess(GLfloat amount) {
   GLfloat SHINY_MIN = 0;
   GLfloat SHINY_MAX = 250;
@@ -74,21 +74,34 @@ float addShininess(GLfloat amount) {
   return shininess;
 }
 
-void loadMolecule(const char * filename) {
+bool BothAreSpaces(char lhs, char rhs) {
+  return (lhs == rhs) && (lhs == ' ');
+}
+
+std::string trim(std::string const& str) {
+  std::size_t first = str.find_first_not_of(' ');
+  std::size_t last  = str.find_last_not_of(' ');
+  std::string newStr = str.substr(first, last-first+1);
+
+  std::string::iterator new_end = std::unique(newStr.begin(), newStr.end(), BothAreSpaces);
+  newStr.erase(new_end, newStr.end());
+  return newStr;
+}
+
+void loadMolecule(std::string filename) {
   pugi::xml_document doc;
-  if (!doc.load_file(filename)) {
-    printf("Error: Could not load molecule file: %s\n", filename);
+  if (!doc.load_file(filename.c_str())) {
+    printf("Error: Could not load molecule file: %s\n", filename.c_str());
     std::exit(-1);
   }
   atom_list.clear();
   bond_list.clear();
   std::string name = doc.child("molecule").child_value("name");
-  std::cout << "Loaded molecule: " << doc.child("molecule").child_value("name") << std::endl;
 
   if(name.length() > 0) {
     glutSetWindowTitle(name.c_str());
   } else {
-    glutSetWindowTitle(("OpenGL Project: %s", filename));
+    glutSetWindowTitle(filename.c_str());
   }
 
   std::map<std::string, Atom> atom_map;
@@ -103,11 +116,11 @@ void loadMolecule(const char * filename) {
 
     char atomType = *atom.attribute("elementType").value();
 
-    std::cout << "Element: " << atom.attribute("elementType").value();
-    std::cout << ", X: " << x;
-    std::cout << ", Y: " << y;
-    std::cout << ", Z: " << z;
-    std::cout << std::endl;
+    // std::cout << "Element: " << atom.attribute("elementType").value();
+    // std::cout << ", X: " << x;
+    // std::cout << ", Y: " << y;
+    // std::cout << ", Z: " << z;
+    // std::cout << std::endl;
 
     Atom tempAtom(ATOM_RADIUS, x, y, z, atomType);
     atom_map.insert(std::pair<std::string, Atom>(id, tempAtom));
@@ -117,7 +130,7 @@ void loadMolecule(const char * filename) {
   // parse all bonds
   pugi::xml_node bonds = doc.child("molecule").child("bondArray");
   for (pugi::xml_node bond = bonds.child("bond"); bond; bond = bond.next_sibling("bond")) {
-    std::string refAtoms = bond.attribute("atomRefs2").as_string();
+    std::string refAtoms = trim(bond.attribute("atomRefs2").as_string());
 
     std::string delimiter = " ";
 
@@ -131,11 +144,11 @@ void loadMolecule(const char * filename) {
 
     bond_list.push_back(tempBond);
 
-    std::cout << "Bond: " << refAtoms;
-    std::cout << ", order: " << order;
-    std::cout << std::endl;
+    // std::cout << "Bond: " << refAtoms;
+    // std::cout << ", order: " << order;
+    // std::cout << std::endl;
   }
-  printf("Done loading molecule: %s\n", filename);
+  printf("Done loading molecule: %s\n", filename.c_str());
 }
 
 void display() {
@@ -292,16 +305,21 @@ void pressSpecialKey(int key, int xx, int yy) {
       break;
     }
     case GLUT_KEY_RIGHT: {
-      moleculeFileIndex = moleculeFileIndex == NUM_MOLECULES-1 ? 0 : moleculeFileIndex+1;
-      loadMolecule(moleculeFiles[moleculeFileIndex]);
-      // cam->yaw(YAW_AMT);
+      // next molecule
+      moleculeFileIndex++;
+      if(moleculeFileIndex >= files.size()) {
+        moleculeFileIndex = 0;
+      }
+      loadMolecule(files.at(moleculeFileIndex));
       break;
     }
     case GLUT_KEY_LEFT: {
       // previous molecule
-      moleculeFileIndex = moleculeFileIndex == 0 ? NUM_MOLECULES - 1 : moleculeFileIndex-1;
-      loadMolecule(moleculeFiles[moleculeFileIndex]);
-      // cam->yaw(-YAW_AMT);
+      moleculeFileIndex--;
+      if(moleculeFileIndex < 0) {
+        moleculeFileIndex = files.size()-1;
+      }
+      loadMolecule(files.at(moleculeFileIndex));
       break;
     }
   }
@@ -334,12 +352,6 @@ void mouseMove(int x, int y) {
 }
 
 int main(int argc, char** argv) {
-
-  int index;
-  for(index = 0; index < argc; index++) {
-    printf("The %d is %s\n",index,argv[index]);
-  }
-
   Shader s;
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -356,7 +368,7 @@ int main(int argc, char** argv) {
   glutMotionFunc(mouseMove);
 
   // load molecule
-  loadMolecule(moleculeFiles[moleculeFileIndex]);
+  loadMolecule("cmls/caffeine.cml");
 
   char *skyboxTex[6] ={
     "textures/bokeh_right.png",
@@ -383,6 +395,8 @@ int main(int argc, char** argv) {
   // }
 
   s.createShaderProgram("phong.vert", "phong.frag", &shaderProg);
+
+  getMoleculeFiles();
 
   cam = new Camera(position, lookAtPoint, upVector);
 

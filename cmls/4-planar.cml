@@ -7,9 +7,9 @@
   <atom id="a5" elementType="Cl" x3="-1.022155" y3="-1.372432" z3="1.272628"/>
  </atomArray>
  <bondArray>
-  <bond atomRefs2=" a1  a2" order=" 1"/>
-  <bond atomRefs2=" a1  a3" order=" 1"/>
-  <bond atomRefs2=" a1  a4" order=" 1"/>
-  <bond atomRefs2=" a1  a5" order=" 1"/>
+  <bond atomRefs2="a1 a2" order="1"/>
+  <bond atomRefs2="a1 a3" order="1"/>
+  <bond atomRefs2="a1 a4" order="1"/>
+  <bond atomRefs2="a1 a5" order="1"/>
  </bondArray>
 </molecule>

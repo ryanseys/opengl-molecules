@@ -8,10 +8,10 @@
   <atom id="a6" elementType="F" x3="0.672698" y3="-0.834895" z3="-0.402895"/>
  </atomArray>
  <bondArray>
-  <bond atomRefs2=" a1  a2" order=" 1"/>
-  <bond atomRefs2=" a1  a3" order=" 1"/>
-  <bond atomRefs2=" a1  a4" order=" 1"/>
-  <bond atomRefs2=" a1  a5" order=" 1"/>
-  <bond atomRefs2=" a1  a6" order=" 1"/>
+  <bond atomRefs2="a1 a2" order="1"/>
+  <bond atomRefs2="a1 a3" order="1"/>
+  <bond atomRefs2="a1 a4" order="1"/>
+  <bond atomRefs2="a1 a5" order="1"/>
+  <bond atomRefs2="a1 a6" order="1"/>
  </bondArray>
 </molecule>

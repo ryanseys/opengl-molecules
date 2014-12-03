@@ -6,8 +6,8 @@
   <atom id="a4" elementType="H" x3="-0.615397" y3="0.727443" z3="0.914476"/>
  </atomArray>
  <bondArray>
-  <bond atomRefs2=" a1  a2" order=" 1"/>
-  <bond atomRefs2=" a1  a3" order=" 1"/>
-  <bond atomRefs2=" a1  a4" order=" 1"/>
+  <bond atomRefs2="a1 a2" order="1"/>
+  <bond atomRefs2="a1 a3" order="1"/>
+  <bond atomRefs2="a1 a4" order="1"/>
  </bondArray>
 </molecule>
