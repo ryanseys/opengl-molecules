@@ -201,6 +201,10 @@ public:
     this->clear();
   }
 
+  void setRadius(GLfloat r) {
+    this->radius = r;
+  }
+
   void scale(GLfloat xAmt, GLfloat yAmt, GLfloat zAmt) {
     modelMat = modelMat * Matrix4f::scale(xAmt, yAmt, zAmt);
   }

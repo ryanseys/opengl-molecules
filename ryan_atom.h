@@ -20,10 +20,11 @@ public:
       case 'H':
         // hydrogen is white but not too white (so we make it light grey)
         // this->scale(0.5);
-        // this->setRadius(0.5);
+
         this->sphere->setAmbient(0.5, 0.5, 0.5); // material ambient color
         this->sphere->setDiffuse(0.4, 0.4, 0.4); // material diffuse color
         this->sphere->setSpecular(0.1, 0.1, 0.1); // material specular color
+        this->sphere->setRadius(0.5); // hydrogen is smaller
         break;
       case 'C':
         // carbon is black but not too black (so we make it dark grey)
