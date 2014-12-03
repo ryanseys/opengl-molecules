@@ -11,16 +11,16 @@ class Bond {
 protected:
   Cylinder * cylinder;
   GLfloat x, y, z;
-  Atom * firstAtom;
-  Atom * secondAtom;
+  Atom firstAtom;
+  Atom secondAtom;
 public:
-  Bond(Atom * firstAtom, Atom * secondAtom) {
+  Bond(Atom firstAtom, Atom secondAtom) {
     this->firstAtom = firstAtom;
     this->secondAtom = secondAtom;
     this->cylinder = new Cylinder(30);
-    this->x = (secondAtom->x + firstAtom->x) / 2.0;
-    this->y = (secondAtom->y + firstAtom->y) / 2.0;
-    this->z = (secondAtom->z + firstAtom->z) / 2.0;
+    this->x = (secondAtom.x + firstAtom.x) / 2.0;
+    this->y = (secondAtom.y + firstAtom.y) / 2.0;
+    this->z = (secondAtom.z + firstAtom.z) / 2.0;
   }
 
   ~Bond() {
@@ -36,9 +36,9 @@ public:
 
     // Get diff between two points (line the cylinder should follow)
     Vector3f p(
-      secondAtom->x - firstAtom->x,
-      secondAtom->y - firstAtom->y,
-      secondAtom->z - firstAtom->z
+      secondAtom.x - firstAtom.x,
+      secondAtom.y - firstAtom.y,
+      secondAtom.z - firstAtom.z
     );
 
     // This is the default direction for the cylinder

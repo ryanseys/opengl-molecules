@@ -1,7 +1,7 @@
 #ifndef RYAN_ATOM
 #define RYAN_ATOM
 
-#include "ryan_matrix.h"
+// #include "ryan_matrix.h"
 #include "ryan_sphere.h"
 
 class Atom {
@@ -10,6 +10,7 @@ protected:
   GLfloat radius;
 public:
   GLfloat x, y, z;
+  Atom() {}
   Atom(GLfloat radius, GLfloat x, GLfloat y, GLfloat z, char type) {
     sphere = new SolidSphere(radius, 60, 60);
     this->radius = radius;
@@ -24,7 +25,7 @@ public:
         this->sphere->setAmbient(0.5, 0.5, 0.5); // material ambient color
         this->sphere->setDiffuse(0.4, 0.4, 0.4); // material diffuse color
         this->sphere->setSpecular(0.1, 0.1, 0.1); // material specular color
-        this->sphere->setRadius(0.5); // hydrogen is smaller
+        // this->sphere->setRadius(0.5); // hydrogen is smaller
         break;
       case 'C':
         // carbon is black but not too black (so we make it dark grey)

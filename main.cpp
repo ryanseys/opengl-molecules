@@ -27,7 +27,11 @@ GLfloat rotateAngle = 0;
 GLfloat rotateMoleculeY = 0;
 GLfloat rotateMoleculeX = 0;
 
-const char * DEFAULT_MOLECULE_FILE = "caffeine.cml";
+const char * moleculeFiles[3] = {
+  "caffeine.cml",
+  "alpha-L-rhamnopyranose.cml",
+  "ethyl.cml"
+};
 
 Camera * cam;
 
@@ -55,6 +59,68 @@ float addShininess(GLfloat amount) {
     shininess = SHINY_MAX;
   }
   return shininess;
+}
+
+void loadMolecule(const char * filename) {
+  pugi::xml_document doc;
+  if (!doc.load_file(filename)) {
+    printf("Error: Could not load molecule file: %s\n", filename);
+    std::exit(-1);
+  }
+  atom_list.clear();
+  bond_list.clear();
+  std::string name = doc.child("molecule").child_value("name");
+  std::cout << "Loaded molecule: " << doc.child("molecule").child_value("name") << std::endl;
+
+  if(name.length() > 0) {
+    glutSetWindowTitle(name.c_str());
+  }
+
+  std::map<std::string, Atom> atom_map;
+
+  // parse all atoms
+  pugi::xml_node atoms = doc.child("molecule").child("atomArray");
+  for (pugi::xml_node atom = atoms.child("atom"); atom; atom = atom.next_sibling("atom")) {
+    GLfloat x = atom.attribute("x3").as_float();
+    GLfloat y = atom.attribute("y3").as_float();
+    GLfloat z = atom.attribute("z3").as_float();
+    std::string id = atom.attribute("id").as_string();
+
+    char atomType = *atom.attribute("elementType").value();
+
+    std::cout << "Element: " << atom.attribute("elementType").value();
+    std::cout << ", X: " << x;
+    std::cout << ", Y: " << y;
+    std::cout << ", Z: " << z;
+    std::cout << std::endl;
+
+    Atom tempAtom(ATOM_RADIUS, x, y, z, atomType);
+    atom_map.insert(std::pair<std::string, Atom>(id, tempAtom));
+    atom_list.push_back(tempAtom);
+  }
+
+  // parse all bonds
+  pugi::xml_node bonds = doc.child("molecule").child("bondArray");
+  for (pugi::xml_node bond = bonds.child("bond"); bond; bond = bond.next_sibling("bond")) {
+    std::string refAtoms = bond.attribute("atomRefs2").as_string();
+
+    std::string delimiter = " ";
+
+    int end = refAtoms.find(delimiter, 0);
+    std::string token1 = refAtoms.substr(0, end);
+    std::string token2 = refAtoms.substr(end+1, refAtoms.find(delimiter, refAtoms.length()-1));
+
+    int order = bond.attribute("order").as_int();
+
+    Bond tempBond(atom_map.find(token1)->second, atom_map.find(token2)->second);
+
+    bond_list.push_back(tempBond);
+
+    std::cout << "Bond: " << refAtoms;
+    std::cout << ", order: " << order;
+    std::cout << std::endl;
+  }
+  printf("Done loading molecule: %s\n", filename);
 }
 
 void display() {
@@ -181,10 +247,24 @@ void keyboardFunc(unsigned char key, int x, int y) {
       printf("coneAngle: %f\n", coneAngle);
       break;
     }
-
     case 'm': {
       rotateAngle+=0.1;
       printf("rotateAngle: %f\n", rotateAngle);
+      break;
+    }
+    case '1': {
+      printf("1 pressed\n");
+      loadMolecule(moleculeFiles[0]);
+      break;
+    }
+    case '2': {
+      printf("2 pressed\n");
+      loadMolecule(moleculeFiles[1]);
+      break;
+    }
+    case '3': {
+      printf("3 pressed\n");
+      loadMolecule(moleculeFiles[2]);
       break;
     }
     default: return;
@@ -242,21 +322,11 @@ void mouseMove(int x, int y) {
 }
 
 int main(int argc, char** argv) {
-  pugi::xml_document doc;
-  if (!doc.load_file(DEFAULT_MOLECULE_FILE)) return -1;
-  std::string name = doc.child("molecule").child_value("name");
-  std::cout << "Loaded molecule: " << doc.child("molecule").child_value("name") << std::endl;
-
   Shader s;
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
   glutInitWindowSize(800, 600);
-
-  if(name.length() > 0) {
-    glutCreateWindow(name.c_str());
-  } else {
-    glutCreateWindow("OpenGL Molecules");
-  }
+  glutCreateWindow("OpenGL Molecules");
 
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
@@ -265,6 +335,9 @@ int main(int argc, char** argv) {
 
   glutMouseFunc(mouseButton);
   glutMotionFunc(mouseMove);
+
+  // load molecule
+  loadMolecule(moleculeFiles[0]);
 
   // Uncomment the code below to work on Windows!
   // GLenum err = glewInit();
@@ -275,52 +348,6 @@ int main(int argc, char** argv) {
   s.createShaderProgram("phong.vert", "phong.frag", &shaderProg);
 
   cam = new Camera(position, lookAtPoint, upVector);
-
-  std::map<std::string, Atom> atom_map;
-
-  // parse all atoms
-  pugi::xml_node atoms = doc.child("molecule").child("atomArray");
-  for (pugi::xml_node atom = atoms.child("atom"); atom; atom = atom.next_sibling("atom")) {
-    GLfloat x = atom.attribute("x3").as_float();
-    GLfloat y = atom.attribute("y3").as_float();
-    GLfloat z = atom.attribute("z3").as_float();
-    std::string id = atom.attribute("id").as_string();
-
-    char atomType = *atom.attribute("elementType").value();
-
-    std::cout << "Element: " << atom.attribute("elementType").value();
-    std::cout << ", X: " << x;
-    std::cout << ", Y: " << y;
-    std::cout << ", Z: " << z;
-    std::cout << std::endl;
-
-    Atom tempAtom(ATOM_RADIUS, x, y, z, atomType);
-    atom_map.insert(std::pair<std::string, Atom>(id, tempAtom));
-    atom_list.push_back(tempAtom);
-  }
-
-  // parse all bonds
-  pugi::xml_node bonds = doc.child("molecule").child("bondArray");
-  for (pugi::xml_node bond = bonds.child("bond"); bond; bond = bond.next_sibling("bond")) {
-    std::string refAtoms = bond.attribute("atomRefs2").as_string();
-
-    // std::string s = "scott>=tiger>=mushroom";
-    std::string delimiter = " ";
-
-    int end = refAtoms.find(delimiter, 0);
-    std::string token1 = refAtoms.substr(0, end);
-    std::string token2 = refAtoms.substr(end+1, refAtoms.find(delimiter, refAtoms.length()-1));
-
-    int order = bond.attribute("order").as_int();
-
-    Bond tempBond(& atom_map.find(token1)->second, & atom_map.find(token2)->second);
-
-    bond_list.push_back(tempBond);
-
-    std::cout << "Bond: " << refAtoms;
-    std::cout << ", order: " << order;
-    std::cout << std::endl;
-  }
 
   // Set up light
   light = new Light();
