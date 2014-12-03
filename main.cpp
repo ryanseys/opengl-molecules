@@ -232,7 +232,7 @@ void mouseMove(int x, int y) {
     int dy = yLast - y;
     int totalX = xStart - x;
     int totalY = yStart - y;
-    rotateMoleculeY = -totalX * 0.01;
+    rotateMoleculeY -= (dx * 0.01);
     // rotateMoleculeX = totalY * 0.01;
     // cam->pitch(-dy*0.1);
     // cam->yaw(dx*0.1);
