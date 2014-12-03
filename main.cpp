@@ -14,12 +14,12 @@
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
-const GLfloat FORWARD_AMT = 2;
+const GLfloat FORWARD_AMT = 0.5;
 const GLfloat RIGHT_AMT = 0.5;
 const GLfloat TIMER_TICK = 20; // milliseconds
 const GLfloat ATOM_RADIUS = 0.7;
 
-Vector3f position (10, 10, 10);
+Vector3f position (6.0, 6.0, 6.0);
 Vector3f lookAtPoint(0, 0, 0);
 Vector3f upVector(0, 1, 0);
 

@@ -73,9 +73,7 @@ public:
   }
 
   void draw(GLuint shaderProg) {
-
     this->translate(this->x, this->y, this->z);
-    // this->sphere->scale(radius, radius, radius);
     this->sphere->draw(shaderProg);
   }
 
