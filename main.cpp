@@ -29,10 +29,14 @@ GLfloat rotateAngle = 0;
 GLfloat rotateMoleculeY = 0;
 GLfloat rotateMoleculeX = 0;
 
-const char * moleculeFiles[3] = {
-  "caffeine.cml",
-  "alpha-L-rhamnopyranose.cml",
-  "ethyl.cml"
+int moleculeFileIndex = 0;
+const int NUM_MOLECULES = 4;
+
+const char * moleculeFiles[NUM_MOLECULES] = {
+  "cmls/caffeine.cml",
+  "cmls/C60-buckminsterfullerene.cml",
+  "cmls/alpha-L-rhamnopyranose.cml",
+  "cmls/ethyl.cml"
 };
 
 Camera * cam;
@@ -81,6 +85,8 @@ void loadMolecule(const char * filename) {
 
   if(name.length() > 0) {
     glutSetWindowTitle(name.c_str());
+  } else {
+
   }
 
   std::map<std::string, Atom> atom_map;
@@ -192,8 +198,6 @@ void display() {
 
   glUseProgram(0);
 
-  // displayBoxFun(sphereBoxProg);
-
   glFlush();
   glutSwapBuffers();
 }
@@ -270,21 +274,6 @@ void keyboardFunc(unsigned char key, int x, int y) {
       printf("rotateAngle: %f\n", rotateAngle);
       break;
     }
-    case '1': {
-      printf("1 pressed\n");
-      loadMolecule(moleculeFiles[0]);
-      break;
-    }
-    case '2': {
-      printf("2 pressed\n");
-      loadMolecule(moleculeFiles[1]);
-      break;
-    }
-    case '3': {
-      printf("3 pressed\n");
-      loadMolecule(moleculeFiles[2]);
-      break;
-    }
     default: return;
   }
   glutPostRedisplay();
@@ -301,11 +290,16 @@ void pressSpecialKey(int key, int xx, int yy) {
       break;
     }
     case GLUT_KEY_RIGHT: {
-      cam->yaw(YAW_AMT);
+      moleculeFileIndex = moleculeFileIndex == NUM_MOLECULES-1 ? 0 : moleculeFileIndex+1;
+      loadMolecule(moleculeFiles[moleculeFileIndex]);
+      // cam->yaw(YAW_AMT);
       break;
     }
     case GLUT_KEY_LEFT: {
-      cam->yaw(-YAW_AMT);
+      // previous molecule
+      moleculeFileIndex = moleculeFileIndex == 0 ? NUM_MOLECULES - 1 : moleculeFileIndex-1;
+      loadMolecule(moleculeFiles[moleculeFileIndex]);
+      // cam->yaw(-YAW_AMT);
       break;
     }
   }
@@ -331,7 +325,7 @@ void mouseMove(int x, int y) {
     int totalX = xStart - x;
     int totalY = yStart - y;
     rotateMoleculeY -= (dx * 0.01);
-    // rotateMoleculeX = totalY * 0.01;
+    rotateMoleculeX += (dy * 0.01);
     // cam->pitch(-dy*0.1);
     // cam->yaw(dx*0.1);
   }
@@ -340,6 +334,12 @@ void mouseMove(int x, int y) {
 }
 
 int main(int argc, char** argv) {
+
+  int index;
+  for(index = 0; index < argc; index++) {
+    printf("The %d is %s\n",index,argv[index]);
+  }
+
   Shader s;
   glutInit(&argc, argv);
   glutInitDisplayMode (GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
@@ -356,15 +356,15 @@ int main(int argc, char** argv) {
   glutMotionFunc(mouseMove);
 
   // load molecule
-  loadMolecule(moleculeFiles[0]);
+  loadMolecule(moleculeFiles[moleculeFileIndex]);
 
   char *skyboxTex[6] ={
-    "bokeh_right.png",
-    "bokeh_left.png",
-    "bokeh_top.png",
-    "bokeh_bottom.png",
-    "bokeh_front.png",
-    "bokeh_back.png"
+    "textures/bokeh_right.png",
+    "textures/bokeh_left.png",
+    "textures/bokeh_top.png",
+    "textures/bokeh_bottom.png",
+    "textures/bokeh_front.png",
+    "textures/bokeh_back.png"
   };
 
   skybox.loadSkybox(skyboxTex);
