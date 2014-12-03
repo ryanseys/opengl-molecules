@@ -27,7 +27,7 @@ GLfloat rotateAngle = 0;
 GLfloat rotateMoleculeY = 0;
 GLfloat rotateMoleculeX = 0;
 
-const char * DEFAULT_MOLECULE_FILE = "alpha-L-rhamnopyranose.cml";
+const char * DEFAULT_MOLECULE_FILE = "caffeine.cml";
 
 Camera * cam;
 
@@ -265,6 +265,12 @@ int main(int argc, char** argv) {
 
   glutMouseFunc(mouseButton);
   glutMotionFunc(mouseMove);
+
+  // Uncomment the code below to work on Windows!
+  // GLenum err = glewInit();
+  // if (err != GLEW_OK) {
+  //   printf("Error initializing GLEW!\n");
+  // }
 
   s.createShaderProgram("phong.vert", "phong.frag", &shaderProg);
 

@@ -5,9 +5,9 @@
 #if defined(__APPLE__)
 #include <GLUT/glut.h>
 #else
-#include "GL/glut.h"
-#include <windows.h>
 #include "glew.h"
+#include <GL/glut.h>
+#include <windows.h>
 #endif
 
 class Shader {
