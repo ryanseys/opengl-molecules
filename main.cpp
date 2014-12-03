@@ -186,13 +186,13 @@ void display() {
    */
   for(std::vector<Atom>::iterator atom = atom_list.begin(); atom != atom_list.end(); ++atom) {
     atom->rotateY(rotateMoleculeY, 0);
-    atom->rotateX(rotateMoleculeX, 0);
+    // atom->rotateX(rotateMoleculeX, 0);
     atom->draw(shaderProg);
   }
 
   for(std::vector<Bond>::iterator bond = bond_list.begin(); bond != bond_list.end(); ++bond) {
     bond->rotateY(rotateMoleculeY, 0);
-    bond->rotateX(rotateMoleculeX, 0);
+    // bond->rotateX(rotateMoleculeX, 0);
     bond->draw(shaderProg, rotateAngle);
   }
 
