@@ -230,6 +230,7 @@ void idleFunc() {
 
 void renderTick(int value) {
   // do stuff here
+  rotateMoleculeY = (rotateMoleculeY + 0.006);
   glutPostRedisplay();
   glutTimerFunc(TIMER_TICK, renderTick, 1); // restart the timer
 }
@@ -361,7 +362,7 @@ int main(int argc, char** argv) {
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
-  glutIdleFunc(idleFunc);
+  // glutIdleFunc(idleFunc);
   glutSpecialFunc(pressSpecialKey);
 
   glutMouseFunc(mouseButton);
@@ -422,7 +423,7 @@ int main(int argc, char** argv) {
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);
-  // glutTimerFunc(1, renderTick, 1);
+  glutTimerFunc(1, renderTick, 1);
   glutMainLoop();
   return 0;
 }
