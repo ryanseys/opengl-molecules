@@ -11,6 +11,8 @@
 #include "ryan_matrix.h"
 #include "ryan_light.h"
 #include "ryan_bond.h"
+#include "SOIL.h"
+#include "SkyBox.h"
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
@@ -34,6 +36,11 @@ const char * moleculeFiles[3] = {
 };
 
 Camera * cam;
+
+// Skybox related variables
+SkyBox skybox;
+GLuint skyboxProg;
+GLuint sphereBoxProg;
 
 Light * light;
 Light * spotlight;
@@ -123,12 +130,100 @@ void loadMolecule(const char * filename) {
   printf("Done loading molecule: %s\n", filename);
 }
 
+void displayBoxFun(GLuint shaderProg) {
+  Matrix4f viewMat, projMat, modelMat, m;
+  // set up the mode to wireframe
+
+  // setting up the transformaiton of the object from model coord. system to world coord.
+  modelMat = Matrix4f::identity();
+  //modelMat = Matrix4f::translation(0,0,0);
+
+  modelMat = Matrix4f::scale(50,50,50);
+
+  // ROATE THE OBJECT AROUND THE CAMERA VECTOR
+  // CAN ADD ROTATIONS AROUND THE PRIMARY AXIS
+  modelMat = modelMat * Matrix4f::rotateVector(cam->lookAtVector,0,1);
+
+  // setting up the viewpoint transformation
+  viewMat = cam->getViewMatrix();
+
+  // setting up the projection transformation
+  projMat= cam->getProjMatrix();
+
+  // putting it all together
+  m = projMat * viewMat * modelMat;
+
+  // tell openfl which shader program to use
+  glUseProgram(shaderProg);
+
+  // transfer the modelViewProjection  matrix to the shader
+  GLuint locMat= 0;
+  locMat=glGetUniformLocation(shaderProg,  "modelViewProjMat");
+  glUniformMatrix4fv(locMat,1,1,(float *)m.vm);
+
+  // transfer the modelView matrix to the shader
+  m = viewMat * modelMat;
+  locMat=glGetUniformLocation(shaderProg,  "modelViewMat");
+  glUniformMatrix4fv(locMat,1,1,(float *)m.vm);
+
+  // transfer the model matrix to the shader
+  m = modelMat;
+  locMat=glGetUniformLocation(shaderProg,  "modelMat");
+  glUniformMatrix4fv(locMat,1,1,(float *)m.vm);
+
+  // load the camera position to the shader
+  locMat=glGetUniformLocation(shaderProg,  "camPos");
+  Vector3f camPos = cam->getPosition();
+  glUniform3fv(locMat,1, (float *) &camPos);
+
+  // load the refract flag to the shader
+  int refractFlag = 0;
+  locMat=glGetUniformLocation(shaderProg,  "refractFlag");
+  glUniform1i(locMat, refractFlag);
+
+  glActiveTexture(GL_TEXTURE3);
+  GLuint texCube = skybox.getTexHandle();
+  glBindTexture(GL_TEXTURE_CUBE_MAP, texCube);
+  GLuint samLoc = glGetUniformLocation(shaderProg, "texCube");
+  glUniform1i(samLoc, 3);
+
+  GLint ttt = 0;
+  glGetUniformiv(shaderProg, samLoc, &ttt);
+
+  // bind the buffers to the shaders
+  // GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
+  // GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
+
+  // glEnableVertexAttribArray(positionLoc);
+  // glEnableVertexAttribArray(normalLoc);
+
+  // glBindBuffer(GL_ARRAY_BUFFER, vertex_handle);
+  // glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, triangle_handle);
+
+  // Tells OpenGL how to walk through the two VBOs
+  // struct sphereVertex v;
+  // int relAddress = (char *) v.pos - (char *) &v;
+  // glVertexAttribPointer(positionLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
+  // relAddress = (char *) v.normal - (char *) &v;
+  // glVertexAttribPointer(normalLoc,4,GL_FLOAT, GL_FALSE, sizeof(struct sphereVertex),(char*) NULL+relAddress);
+
+  // draw the triangles
+  // glDrawElements(GL_TRIANGLES, numTriangles*3, GL_UNSIGNED_INT, (char*) NULL+0);
+
+  glUseProgram(0);
+  return;
+}
+
 void display() {
   glEnable(GL_DEPTH_TEST);
   glClearColor(1.0, 1.0, 1.0, 1);
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
+  skybox.displaySkybox(*cam);
+  glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
   glUseProgram(shaderProg);
+
 
   GLuint viewMatLoc = glGetUniformLocation(shaderProg,  "viewMat");
   glUniformMatrix4fv(viewMatLoc, 1, 1, (float *) cam->getViewMatrix().vm);
@@ -182,6 +277,9 @@ void display() {
   }
 
   glUseProgram(0);
+
+  // displayBoxFun(sphereBoxProg);
+
   glFlush();
   glutSwapBuffers();
 }
@@ -189,6 +287,12 @@ void display() {
 void reshape(GLint w, GLint h) {
   glViewport(0, 0, (GLsizei) w, (GLsizei) h);
   cam->reshape(w, h);
+}
+
+int t = 0;
+void idleFunc() {
+  t++;
+  glutPostRedisplay();
 }
 
 void renderTick(int value) {
@@ -331,6 +435,7 @@ int main(int argc, char** argv) {
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
+  glutIdleFunc(idleFunc);
   glutSpecialFunc(pressSpecialKey);
 
   glutMouseFunc(mouseButton);
@@ -338,6 +443,24 @@ int main(int argc, char** argv) {
 
   // load molecule
   loadMolecule(moleculeFiles[0]);
+
+  char *skyboxTex[6] ={
+    "bokeh_right.png",
+    "bokeh_left.png",
+    "bokeh_top.png",
+    "bokeh_bottom.png",
+    "bokeh_front.png",
+    "bokeh_back.png"
+  };
+
+  skybox.loadSkybox(skyboxTex);
+  skybox.init();
+
+  int rc = s.createShaderProgram("sphereBox.vert", "sphereBox.frag", &sphereBoxProg);
+  if (rc != 0) {
+    printf(" error after generating sphere skybox shaders \n");
+    rc = 4;
+  }
 
   // Uncomment the code below to work on Windows!
   // GLenum err = glewInit();
@@ -371,7 +494,7 @@ int main(int argc, char** argv) {
 
   glutPostRedisplay();
   glEnable(GL_DEPTH_TEST);
-  glutTimerFunc(1, renderTick, 1);
+  // glutTimerFunc(1, renderTick, 1);
   glutMainLoop();
   return 0;
 }
