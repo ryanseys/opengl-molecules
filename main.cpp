@@ -39,6 +39,8 @@ const char * moleculeFiles[NUM_MOLECULES] = {
   "cmls/ethyl.cml"
 };
 
+std::vector<std::string> files(moleculeFiles, std::end(moleculeFiles));
+
 Camera * cam;
 
 // Skybox related variables
@@ -86,7 +88,7 @@ void loadMolecule(const char * filename) {
   if(name.length() > 0) {
     glutSetWindowTitle(name.c_str());
   } else {
-
+    glutSetWindowTitle(("OpenGL Project: %s", filename));
   }
 
   std::map<std::string, Atom> atom_map;
@@ -326,8 +328,6 @@ void mouseMove(int x, int y) {
     int totalY = yStart - y;
     rotateMoleculeY -= (dx * 0.01);
     rotateMoleculeX += (dy * 0.01);
-    // cam->pitch(-dy*0.1);
-    // cam->yaw(dx*0.1);
   }
   xLast = x;
   yLast = y;
