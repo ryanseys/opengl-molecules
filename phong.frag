@@ -23,7 +23,6 @@ uniform vec4 spotLookAtPnt;
 uniform float spotAngAtten;
 uniform float spotConeAngle;
 
-uniform int refractFlag;
 uniform samplerCube texCube;
 varying vec3 reflectionVector;
 

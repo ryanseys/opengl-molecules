@@ -30,7 +30,6 @@ public:
   }
 
   ~Bond() {
-    // destructor
   }
 
   void draw(GLuint shaderProg) {

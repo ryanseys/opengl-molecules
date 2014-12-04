@@ -14,6 +14,7 @@
 #include <math.h>
 #include "assert.h"
 #include "ryan_vector.h"
+#include <iostream>
 
 #define DegreeToRadians(x) (float)(((x) * M_PI / 180.0f))
 #define RadianToDegrees(x) (float)(((x) * 180.0f / M_PI))
@@ -34,6 +35,10 @@ public:
     vm[2] = v2;
     vm[3] = v3;
     m = (float *) vm;
+  }
+
+  ~Matrix4f() {
+    // std::cout << "Deleted Matrix4f" << std::endl;
   }
 
   // Static functions

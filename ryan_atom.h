@@ -20,7 +20,6 @@ public:
   }
 
   ~Atom() {
-    // destructor
   }
 
   GLfloat getDistance(Vector3f v) {
@@ -89,9 +88,7 @@ public:
       this->sphere->setAmbient(0.84, 0.39, 0.0); // material ambient color
       this->sphere->setDiffuse(0.84, 0.39, 0.0); // material diffuse color
       this->sphere->setSpecular(0.84, 0.39, 0.0); // material specular color
-    }
-
-    else {
+    } else {
       this->sphere->setAmbient(1.0, 0.0, 0.2); // material ambient color
       this->sphere->setDiffuse(1.0, 1.0, 0.5); // material diffuse color
       this->sphere->setSpecular(0.8, 0.8, 0.8); // material specular color

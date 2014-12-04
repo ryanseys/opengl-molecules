@@ -69,18 +69,6 @@ void getMoleculeFiles() {
   }
 }
 
-float addShininess(GLfloat amount) {
-  GLfloat SHINY_MIN = 0;
-  GLfloat SHINY_MAX = 250;
-  shininess += amount;
-  if(shininess < SHINY_MIN) {
-    shininess = SHINY_MIN;
-  } else if(shininess > SHINY_MAX) {
-    shininess = SHINY_MAX;
-  }
-  return shininess;
-}
-
 void display() {
   glEnable(GL_DEPTH_TEST);
   glClearColor(1.0, 1.0, 1.0, 1);
@@ -297,7 +285,7 @@ int main(int argc, char** argv) {
   glutMouseFunc(mouseButton);
   glutMotionFunc(mouseMove);
 
-  // load molecule
+  // load default molecule
   molecule = new Molecule("cmls/caffeine.cml");
 
   char *skyboxTex[6] ={
@@ -308,62 +296,6 @@ int main(int argc, char** argv) {
     "textures/bokeh_front.png",
     "textures/bokeh_back.png"
   };
-
-  // char *skyboxTex[6] ={
-  //   "textures/nebula_right.png",
-  //   "textures/nebula_left.png",
-  //   "textures/nebula_top.png",
-  //   "textures/nebula_bottom.png",
-  //   "textures/nebula_front.png",
-  //   "textures/nebula_back.png"
-  // };
-
-  // char *skyboxTex[6] ={
-  //   "textures/right.png",
-  //   "textures/left.png",
-  //   "textures/top.png",
-  //   "textures/bottom.png",
-  //   "textures/front.png",
-  //   "textures/back.png"
-  // };
-
-  // char *skyboxTex[6] ={
-  //   "textures/mol_right.jpg",
-  //   "textures/mol_left.jpg",
-  //   "textures/mol_top.jpg",
-  //   "textures/mol_bottom.jpg",
-  //   "textures/mol_front.jpg",
-  //   "textures/mol_back.jpg"
-  // };
-
-  // char *skyboxTex[6] ={
-  //   "textures/tile.jpg",
-  //   "textures/tile.jpg",
-  //   "textures/tile.jpg",
-  //   "textures/tile.jpg",
-  //   "textures/tile.jpg",
-  //   "textures/tile.jpg"
-  // };
-
-  // char *skyboxTex[6] ={
-  //   "textures/space.png",
-  //   "textures/space.png",
-  //   "textures/space.png",
-  //   "textures/space.png",
-  //   "textures/space.png",
-  //   "textures/space.png"
-  // };
-  //
-  // char *skyboxTex[6] ={
-  //   "textures/seamless.jpg",
-  //   "textures/seamless.jpg",
-  //   "textures/seamless.jpg",
-  //   "textures/seamless.jpg",
-  //   "textures/seamless.jpg",
-  //   "textures/seamless.jpg"
-  // };
-
-  // cylinder = new Cylinder(30);
 
   skybox.loadSkybox(skyboxTex);
   skybox.init();
@@ -395,9 +327,7 @@ int main(int argc, char** argv) {
   light->setSpecular(1.0, 1.0, 1.0);
   light->setPosition(10, 10, 10);
 
-  // Task 5: Create a spotlight
   spotlight = new Light();
-  // white spotlight by default
   spotlight->setAmbient(1.0, 1.0, 1.0);
   spotlight->setDiffuse(1.0, 1.0, 1.0);
   spotlight->setSpecular(1.0, 1.0, 1.0);

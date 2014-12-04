@@ -131,6 +131,10 @@ public:
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * numInd, ind, GL_STATIC_DRAW);
   }
 
+  ~SolidSphere() {
+    std::cout << "Deleted sphere" << std::endl;
+  }
+
   void rotateX(GLfloat angle, int degrees) {
     Matrix4f tempRot = Matrix4f::rotateX(angle, degrees);
     rotMat = rotMat * tempRot;
