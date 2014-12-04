@@ -33,5 +33,5 @@ void main() {
 	rVector = normalize(vertex_position.xyz);
   gl_Position = modelViewProjMat * vertex_position;
 
-	time = t;
+	// time = t;
 }

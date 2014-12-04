@@ -27,12 +27,8 @@ varying float time;
 uniform samplerCube texCube;
 uniform int refractFlag;
 
-void main()
-{
-
-
-
-	if (refractFlag == 1) 	gl_FragColor = textureCube(texCube, refractVector);
+void main() {
+	if (refractFlag == 1)	gl_FragColor = textureCube(texCube, refractVector);
 	else gl_FragColor = textureCube(texCube, reflectionVector);
 	// gl_FragColor = vec4(1.0,0,0,1);
  }

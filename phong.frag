@@ -23,6 +23,10 @@ uniform vec4 spotLookAtPnt;
 uniform float spotAngAtten;
 uniform float spotConeAngle;
 
+uniform int refractFlag;
+uniform samplerCube texCube;
+varying vec3 reflectionVector;
+
 varying vec4 v; // from vertex shader
 varying vec4 N; // from vertex shader
 
@@ -47,6 +51,8 @@ void main (void) {
     }
   }
   vec4 spotlight = vec4(power, power, power, 0);
+  vec4 textureColor = textureCube(texCube, reflectionVector);
+  vec4 objCol = (ambient + diffuse + specular + spotlight);
 
-  gl_FragColor = ambient + diffuse + specular + spotlight;
+  gl_FragColor = vec4(mix(objCol, textureColor, 0.2));
 }

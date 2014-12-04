@@ -153,9 +153,6 @@ public:
     glVertexAttribPointer(vtxLoc, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, pos));
     glVertexAttribPointer(normalLoc, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*) offsetof(Vertex, norm));
 
-    //copy the vertex color
-    // GLint colLoc = glGetAttribLocation( shaderProg, "color");
-    // glEnableVertexAttribArray( colLoc );
 
     glDrawElements( GL_TRIANGLES, m_indices.size(), GL_UNSIGNED_INT, NULL );
     this->clear();

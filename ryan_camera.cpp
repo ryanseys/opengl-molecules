@@ -159,17 +159,13 @@ int Camera::changePositionDelta(float dx, float dy, float dz) {
  */
 Vector3f Camera::moveForward(float numUnits) {
   this->position = position + (lookAtVector * numUnits);
-
   this->refresh();
-
   return position;
 }
 
 Vector3f Camera::moveRight(float numUnits) {
   this->position = position + (rightVector * numUnits);
-
   this->refresh();
-
   return position;
 }
 

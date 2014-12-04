@@ -25,7 +25,7 @@ const GLfloat FORWARD_AMT = 0.5;
 const GLfloat RIGHT_AMT = 0.5;
 const GLfloat TIMER_TICK = 20; // milliseconds
 
-Vector3f position (6.0, 6.0, 6.0);
+Vector3f position (0.0, 1.0, 10.0);
 Vector3f lookAtPoint(0, 0, 0);
 Vector3f upVector(0, 1, 0);
 
@@ -122,6 +122,19 @@ void display() {
   GLuint spotConeAngleLoc = glGetUniformLocation(shaderProg,  "spotConeAngle");
   glUniform1f(spotConeAngleLoc, spotlight->coneAngle);
 
+  GLint refractFlag = 0;
+  GLuint locMat = glGetUniformLocation(shaderProg,  "refractFlag");
+  glUniform1i(locMat, refractFlag);
+
+  glActiveTexture(GL_TEXTURE3);
+  GLuint texCube = skybox.getTexHandle();
+  glBindTexture(GL_TEXTURE_CUBE_MAP, texCube);
+  GLuint samLoc = glGetUniformLocation(shaderProg, "texCube");
+  glUniform1i(samLoc, 3);
+
+  GLint ttt = 0;
+  glGetUniformiv(shaderProg, samLoc, &ttt);
+
   molecule->rotateX(rotateMoleculeX);
   molecule->rotateY(rotateMoleculeY);
   molecule->draw(shaderProg);
@@ -157,14 +170,14 @@ void keyboardFunc(unsigned char key, int x, int y) {
       // Roll camera counter-clockwise
       // Yes, this is backward (i.e. -PITCH_AMT vs. PITCH_AMT to the assignment
       // description but it makes more sense when using the keyboard controls.
-      cam->moveRight(-RIGHT_AMT);
+      cam->yaw(-YAW_AMT);
       break;
     }
     case 'd': {
       // Roll camera counter-clockwise
       // Yes, this is backward (i.e. PITCH_AMT vs. -PITCH_AMT to the assignment
       // description but it makes more sense when using the keyboard controls.
-      cam->moveRight(RIGHT_AMT);
+      cam->yaw(YAW_AMT);
       break;
     }
     case 'w': {
@@ -296,6 +309,60 @@ int main(int argc, char** argv) {
     "textures/bokeh_front.png",
     "textures/bokeh_back.png"
   };
+
+  // char *skyboxTex[6] ={
+  //   "textures/nebula_right.png",
+  //   "textures/nebula_left.png",
+  //   "textures/nebula_top.png",
+  //   "textures/nebula_bottom.png",
+  //   "textures/nebula_front.png",
+  //   "textures/nebula_back.png"
+  // };
+
+  // char *skyboxTex[6] ={
+  //   "textures/right.png",
+  //   "textures/left.png",
+  //   "textures/top.png",
+  //   "textures/bottom.png",
+  //   "textures/front.png",
+  //   "textures/back.png"
+  // };
+
+  // char *skyboxTex[6] ={
+  //   "textures/mol_right.jpg",
+  //   "textures/mol_left.jpg",
+  //   "textures/mol_top.jpg",
+  //   "textures/mol_bottom.jpg",
+  //   "textures/mol_front.jpg",
+  //   "textures/mol_back.jpg"
+  // };
+
+  // char *skyboxTex[6] ={
+  //   "textures/tile.jpg",
+  //   "textures/tile.jpg",
+  //   "textures/tile.jpg",
+  //   "textures/tile.jpg",
+  //   "textures/tile.jpg",
+  //   "textures/tile.jpg"
+  // };
+
+  // char *skyboxTex[6] ={
+  //   "textures/space.png",
+  //   "textures/space.png",
+  //   "textures/space.png",
+  //   "textures/space.png",
+  //   "textures/space.png",
+  //   "textures/space.png"
+  // };
+  //
+  // char *skyboxTex[6] ={
+  //   "textures/seamless.jpg",
+  //   "textures/seamless.jpg",
+  //   "textures/seamless.jpg",
+  //   "textures/seamless.jpg",
+  //   "textures/seamless.jpg",
+  //   "textures/seamless.jpg"
+  // };
 
   // cylinder = new Cylinder(30);
 
