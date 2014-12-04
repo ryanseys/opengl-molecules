@@ -20,7 +20,7 @@
 #endif
 
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
-const GLfloat YAW_AMT = 1.0; // degrees right and left
+const GLfloat YAW_AMT = 5.0; // degrees right and left
 const GLfloat FORWARD_AMT = 0.5;
 const GLfloat RIGHT_AMT = 0.5;
 const GLfloat TIMER_TICK = 20; // milliseconds
@@ -122,10 +122,6 @@ void display() {
   GLuint spotConeAngleLoc = glGetUniformLocation(shaderProg,  "spotConeAngle");
   glUniform1f(spotConeAngleLoc, spotlight->coneAngle);
 
-  GLint refractFlag = 0;
-  GLuint locMat = glGetUniformLocation(shaderProg,  "refractFlag");
-  glUniform1i(locMat, refractFlag);
-
   glActiveTexture(GL_TEXTURE3);
   GLuint texCube = skybox.getTexHandle();
   glBindTexture(GL_TEXTURE_CUBE_MAP, texCube);
@@ -134,6 +130,9 @@ void display() {
 
   GLint ttt = 0;
   glGetUniformiv(shaderProg, samLoc, &ttt);
+
+  GLuint camPosLoc = glGetUniformLocation(shaderProg,  "camPos");
+  glUniform4fv(camPosLoc, 1, (float *) &cam->position);
 
   molecule->rotateX(rotateMoleculeX);
   molecule->rotateY(rotateMoleculeY);

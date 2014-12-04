@@ -21,6 +21,7 @@ uniform vec4 ambientMat;
 uniform vec4 diffuseMat;
 uniform vec4 specMat;
 uniform float specPow;
+uniform vec4 camPos;
 
 varying vec3 reflectionVector;
 
@@ -31,8 +32,7 @@ void main(void) {
   v = vec4(modelViewMat * vPosition);
   N = normalize(normalMat * vNormal);
 
-  vec4 viewVec = vPosition - vec4(0.0, 1.0, 10.0, 1.0); // vPosition - camPos
-  viewVec = normalize(viewVec);
+  vec4 viewVec = normalize(vPosition - camPos);
 
   reflectionVector = reflect(viewVec.xyz, N.xyz);
   gl_Position = modelViewProjMat * vPosition;
