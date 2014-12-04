@@ -4,14 +4,12 @@
 #include <iostream>
 #include <fstream>
 #include <map>
-#include "pugixml.hpp"
 #include "Shader.h"
-#include "ryan_atom.h"
 #include "ryan_cube.h"
 #include "ryan_camera.h"
 #include "ryan_matrix.h"
 #include "ryan_light.h"
-#include "ryan_bond.h"
+#include "ryan_molecule.h"
 #include "SOIL.h"
 #include "SkyBox.h"
 
@@ -26,18 +24,21 @@ const GLfloat YAW_AMT = 1.0; // degrees right and left
 const GLfloat FORWARD_AMT = 0.5;
 const GLfloat RIGHT_AMT = 0.5;
 const GLfloat TIMER_TICK = 20; // milliseconds
-const GLfloat ATOM_RADIUS = 0.7;
 
 Vector3f position (6.0, 6.0, 6.0);
 Vector3f lookAtPoint(0, 0, 0);
 Vector3f upVector(0, 1, 0);
 
-GLfloat rotateAngle = 0;
+int xStart, yStart;
+int xLast, yLast;
+int valid = 0;
+int moleculeFileIndex = 0;
+
+std::vector<std::string> files;
+
+Molecule * molecule;
 GLfloat rotateMoleculeX = 0;
 GLfloat rotateMoleculeY = 0;
-
-int moleculeFileIndex = 0;
-std::vector<std::string> files;
 
 Camera * cam;
 
@@ -56,8 +57,6 @@ GLfloat SHINY_FACTOR = 5.0;
 
 GLuint shaderProg;
 GLint windowHeight, windowWidth;
-std::vector<Atom> atom_list;
-std::vector<Bond> bond_list;
 
 GLfloat angularAtten = 55;
 GLfloat coneAngle = 40;
@@ -82,92 +81,12 @@ float addShininess(GLfloat amount) {
   return shininess;
 }
 
-bool BothAreSpaces(char lhs, char rhs) {
-  return (lhs == rhs) && (lhs == ' ');
-}
-
-std::string trim(std::string const& str) {
-  std::size_t first = str.find_first_not_of(' ');
-  std::size_t last  = str.find_last_not_of(' ');
-  std::string newStr = str.substr(first, last-first+1);
-
-  std::string::iterator new_end = std::unique(newStr.begin(), newStr.end(), BothAreSpaces);
-  newStr.erase(new_end, newStr.end());
-  return newStr;
-}
-
-void loadMolecule(std::string filename) {
-  pugi::xml_document doc;
-  if (!doc.load_file(filename.c_str())) {
-    printf("Error: Could not load molecule file: %s\n", filename.c_str());
-    std::exit(-1);
-  }
-  atom_list.clear();
-  bond_list.clear();
-  std::string name = doc.child("molecule").child_value("name");
-
-  if(name.length() > 0) {
-    glutSetWindowTitle(name.c_str());
-  } else {
-    glutSetWindowTitle(filename.c_str());
-  }
-
-  std::map<std::string, Atom> atom_map;
-
-  // parse all atoms
-  pugi::xml_node atoms = doc.child("molecule").child("atomArray");
-  for (pugi::xml_node atom = atoms.child("atom"); atom; atom = atom.next_sibling("atom")) {
-    GLfloat x = atom.attribute("x3").as_float();
-    GLfloat y = atom.attribute("y3").as_float();
-    GLfloat z = atom.attribute("z3").as_float();
-    std::string id = atom.attribute("id").as_string();
-
-    std::string atomType = atom.attribute("elementType").as_string();
-
-    // std::cout << "Element: " << atom.attribute("elementType").value();
-    // std::cout << ", X: " << x;
-    // std::cout << ", Y: " << y;
-    // std::cout << ", Z: " << z;
-    // std::cout << std::endl;
-
-    Atom tempAtom(ATOM_RADIUS, x, y, z, atomType);
-    atom_map.insert(std::pair<std::string, Atom>(id, tempAtom));
-    atom_list.push_back(tempAtom);
-  }
-
-  // parse all bonds
-  pugi::xml_node bonds = doc.child("molecule").child("bondArray");
-  for (pugi::xml_node bond = bonds.child("bond"); bond; bond = bond.next_sibling("bond")) {
-    std::string refAtoms = trim(bond.attribute("atomRefs2").as_string());
-
-    std::string delimiter = " ";
-
-    int end = refAtoms.find(delimiter, 0);
-    std::string token1 = refAtoms.substr(0, end);
-    std::string token2 = refAtoms.substr(end+1, refAtoms.find(delimiter, refAtoms.length()-1));
-
-    int order = bond.attribute("order").as_int();
-
-    Bond tempBond(atom_map.find(token1)->second, atom_map.find(token2)->second, order);
-
-    bond_list.push_back(tempBond);
-
-    // std::cout << "Bond: " << refAtoms;
-    // std::cout << ", order: " << order;
-    // std::cout << std::endl;
-  }
-  printf("Done loading molecule: %s\n", filename.c_str());
-}
-
-// Cylinder * cylinder;
-
 void display() {
   glEnable(GL_DEPTH_TEST);
   glClearColor(1.0, 1.0, 1.0, 1);
   glClear(GL_COLOR_BUFFER_BIT|GL_DEPTH_BUFFER_BIT);
 
   skybox.displaySkybox(*cam);
-
   glUseProgram(shaderProg);
 
   GLuint viewMatLoc = glGetUniformLocation(shaderProg,  "viewMat");
@@ -203,28 +122,9 @@ void display() {
   GLuint spotConeAngleLoc = glGetUniformLocation(shaderProg,  "spotConeAngle");
   glUniform1f(spotConeAngleLoc, spotlight->coneAngle);
 
-  // setting up the transformation of the object from model coord. system to world coord.
-  // Matrix4f worldMat = cam->getViewMatrix();
-
-  // cylinder->translate(clickPos.x, clickPos.y, clickPos.z);
-  // cylinder->rotateVector(cylinderVec, cylinderAngle);
-  // cylinder->scale(0.01, 40, 0.01);
-  // cylinder->draw(shaderProg);
-
-  /**
-   * Go through each atom and draw it.
-   */
-  for(std::vector<Atom>::iterator atom = atom_list.begin(); atom != atom_list.end(); ++atom) {
-    atom->rotateY(rotateMoleculeY, 0);
-    atom->rotateX(rotateMoleculeX, 0);
-    atom->draw(shaderProg);
-  }
-
-  for(std::vector<Bond>::iterator bond = bond_list.begin(); bond != bond_list.end(); ++bond) {
-    bond->rotateY(rotateMoleculeY, 0);
-    bond->rotateX(rotateMoleculeX, 0);
-    bond->draw(shaderProg, rotateAngle);
-  }
+  molecule->rotateX(rotateMoleculeX);
+  molecule->rotateY(rotateMoleculeY);
+  molecule->draw(shaderProg);
 
   glUseProgram(0);
 
@@ -301,11 +201,6 @@ void keyboardFunc(unsigned char key, int x, int y) {
       printf("coneAngle: %f\n", coneAngle);
       break;
     }
-    case 'm': {
-      rotateAngle+=0.1;
-      printf("rotateAngle: %f\n", rotateAngle);
-      break;
-    }
     case 'p': {
       // Pause the rotation
       isPaused = isPaused == 0 ? 1 : 0;
@@ -333,7 +228,7 @@ void pressSpecialKey(int key, int xx, int yy) {
       if(moleculeFileIndex >= files.size()) {
         moleculeFileIndex = 0;
       }
-      loadMolecule(files.at(moleculeFileIndex));
+      molecule = new Molecule(files.at(moleculeFileIndex));
       break;
     }
     case GLUT_KEY_LEFT: {
@@ -342,16 +237,12 @@ void pressSpecialKey(int key, int xx, int yy) {
       if(moleculeFileIndex < 0) {
         moleculeFileIndex = files.size()-1;
       }
-      loadMolecule(files.at(moleculeFileIndex));
+      molecule = new Molecule(files.at(moleculeFileIndex));
       break;
     }
   }
   glutPostRedisplay();
 }
-
-int xStart, yStart;
-int xLast, yLast;
-int valid = 0;
 
 void mouseButton(int button, int state, int x, int y) {
   xLast = x;
@@ -395,7 +286,7 @@ int main(int argc, char** argv) {
   glutMotionFunc(mouseMove);
 
   // load molecule
-  loadMolecule("cmls/caffeine.cml");
+  molecule = new Molecule("cmls/caffeine.cml");
 
   char *skyboxTex[6] ={
     "textures/bokeh_right.png",

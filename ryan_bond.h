@@ -33,7 +33,7 @@ public:
     // destructor
   }
 
-  void draw(GLuint shaderProg, GLfloat rotateAngle) {
+  void draw(GLuint shaderProg) {
     this->firstBond->setAmbient(0.5, 0.5, 0.5);
     this->firstBond->setDiffuse(0.4, 0.4, 0.4);
     this->firstBond->setSpecular(0.1, 0.1, 0.1);
