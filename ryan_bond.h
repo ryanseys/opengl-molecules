@@ -56,12 +56,20 @@ public:
     this->cylinder->draw(shaderProg);
   }
 
+  void rotateX(GLfloat angle, int degrees) {
+    this->cylinder->rotateX(angle, degrees);
+  }
+
   void rotateY(GLfloat angle, int degrees) {
     this->cylinder->rotateY(angle, degrees);
   }
 
-  void rotateX(GLfloat angle, int degrees) {
-    this->cylinder->rotateX(angle, degrees);
+  void rotateZ(GLfloat angle, int degrees) {
+    this->cylinder->rotateZ(angle, degrees);
+  }
+
+  void rotateVector(Vector3f v, GLfloat angle, int degrees) {
+    this->cylinder->rotateVector(v, angle, degrees);
   }
 
   void translate(GLfloat x, GLfloat y, GLfloat z) {

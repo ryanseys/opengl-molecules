@@ -15,6 +15,12 @@
 #include "SOIL.h"
 #include "SkyBox.h"
 
+#ifdef __APPLE__
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#endif
+
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 1.0; // degrees right and left
 const GLfloat FORWARD_AMT = 0.5;
@@ -27,8 +33,8 @@ Vector3f lookAtPoint(0, 0, 0);
 Vector3f upVector(0, 1, 0);
 
 GLfloat rotateAngle = 0;
-GLfloat rotateMoleculeY = 0;
 GLfloat rotateMoleculeX = 0;
+GLfloat rotateMoleculeY = 0;
 
 int moleculeFileIndex = 0;
 std::vector<std::string> files;
@@ -201,13 +207,13 @@ void display() {
    */
   for(std::vector<Atom>::iterator atom = atom_list.begin(); atom != atom_list.end(); ++atom) {
     atom->rotateY(rotateMoleculeY, 0);
-    // atom->rotateX(rotateMoleculeX, 0);
+    atom->rotateX(rotateMoleculeX, 0);
     atom->draw(shaderProg);
   }
 
   for(std::vector<Bond>::iterator bond = bond_list.begin(); bond != bond_list.end(); ++bond) {
     bond->rotateY(rotateMoleculeY, 0);
-    // bond->rotateX(rotateMoleculeX, 0);
+    bond->rotateX(rotateMoleculeX, 0);
     bond->draw(shaderProg, rotateAngle);
   }
 
@@ -229,7 +235,6 @@ void idleFunc() {
 }
 
 void renderTick(int value) {
-  // do stuff here
   rotateMoleculeY = (rotateMoleculeY + 0.006);
   glutPostRedisplay();
   glutTimerFunc(TIMER_TICK, renderTick, 1); // restart the timer
@@ -346,7 +351,7 @@ void mouseMove(int x, int y) {
     int totalX = xStart - x;
     int totalY = yStart - y;
     rotateMoleculeY -= (dx * 0.01);
-    rotateMoleculeX += (dy * 0.01);
+    rotateMoleculeX -= (dy * 0.01);
   }
   xLast = x;
   yLast = y;

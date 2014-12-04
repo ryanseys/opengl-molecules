@@ -131,6 +131,12 @@ public:
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(GLuint) * numInd, ind, GL_STATIC_DRAW);
   }
 
+  void rotateX(GLfloat angle, int degrees) {
+    Matrix4f tempRot = Matrix4f::rotateX(angle, degrees);
+    rotMat = rotMat * tempRot;
+    modelMat = modelMat * tempRot;
+  }
+
   /**
    * Rotate the sphere around the y-axis.
    *
@@ -142,8 +148,14 @@ public:
     modelMat = modelMat * tempRot;
   }
 
-  void rotateX(GLfloat angle, int degrees) {
-    Matrix4f tempRot = Matrix4f::rotateX(angle, degrees);
+  void rotateZ(GLfloat angle, int degrees) {
+    Matrix4f tempRot = Matrix4f::rotateZ(angle, degrees);
+    rotMat = rotMat * tempRot;
+    modelMat = modelMat * tempRot;
+  }
+
+  void rotateVector(Vector3f v, GLfloat angle, int degrees) {
+    Matrix4f tempRot = Matrix4f::rotateVector(v, angle, degrees);
     rotMat = rotMat * tempRot;
     modelMat = modelMat * tempRot;
   }

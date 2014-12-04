@@ -113,6 +113,12 @@ public:
     modelMat = modelMat * tempRot;
   }
 
+  void rotateVector(Vector3f v, GLfloat angle, int degrees) {
+    Matrix4f tempRot = Matrix4f::rotateVector(v, angle, degrees);
+    rotMat = rotMat * tempRot;
+    modelMat = modelMat * tempRot;
+  }
+
   /**
    * Draw the sphere using the supplied shaderProgram.
    * @param shaderProg Shader program to use.

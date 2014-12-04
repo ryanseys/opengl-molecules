@@ -62,12 +62,20 @@ public:
     return radius;
   }
 
+  void rotateVector(Vector3f v, GLfloat angle, int degrees) {
+    this->sphere->rotateVector(v, angle, degrees);
+  }
+
   void rotateX(GLfloat angle, int degrees) {
     this->sphere->rotateX(angle, degrees);
   }
 
   void rotateY(GLfloat angle, int degrees) {
     this->sphere->rotateY(angle, degrees);
+  }
+
+  void rotateZ(GLfloat angle, int degrees) {
+    this->sphere->rotateZ(angle, degrees);
   }
 
   void draw(GLuint shaderProg) {
