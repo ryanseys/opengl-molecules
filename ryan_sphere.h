@@ -32,9 +32,9 @@ protected:
     GLuint triangleVBO; // Triangle handle that contains triangle indices
     GLuint * ind = NULL;
     int numInd;
-    Matrix4f modelMat = Matrix4f::identity();
-    Matrix4f rotMat = Matrix4f::identity();
 public:
+  Matrix4f modelMat = Matrix4f::identity();
+  Matrix4f rotMat = Matrix4f::identity();
   Vector4f materialAmbient;
   Vector4f materialDiffuse;
   Vector4f materialSpecular;
@@ -135,6 +135,12 @@ public:
     Matrix4f tempRot = Matrix4f::rotateX(angle, degrees);
     rotMat = rotMat * tempRot;
     modelMat = modelMat * tempRot;
+  }
+
+  Vector4f getPosition() {
+    Vector4f pos = modelMat * Vector4f(0, 0, 0, 1.0);
+    printf("x: %f, y: %f, z: %f\n", pos.x, pos.y, pos.z);
+    return pos;
   }
 
   /**

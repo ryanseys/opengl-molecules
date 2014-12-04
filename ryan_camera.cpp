@@ -27,8 +27,7 @@ Camera::Camera(Vector3f posVec, Vector3f lookAtPoint, Vector3f upVec) {
   // setting up the viewpoint transformation
   this->viewMat = Matrix4f::cameraMatrix(this->position, this->lookAtVector, this->upVector);
   // setting up the projection transformation
-  this->projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, 800.0/600.0, 1.0, 1000);
-
+  this->projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, width/height, 1.0, 1000);
   this->refresh();
 }
 
@@ -39,6 +38,8 @@ Camera::Camera(Vector3f posVec, Vector3f lookAtPoint, Vector3f upVec) {
  * @param h new window height
  */
 void Camera::reshape(GLfloat w, GLfloat h) {
+  this->width = w;
+  this->height = h;
   this->projMat = Matrix4f::symmetricPerspectiveProjectionMatrix(60, w/h, 1.0, 1000);
   this->refresh();
 }
@@ -179,6 +180,10 @@ Vector3f Camera::moveRight(float numUnits) {
  */
 Matrix4f Camera::getViewMatrix() {
   return viewMat;
+}
+
+GLfloat Camera::fovX() {
+  return 60 * (width / height);
 }
 
 Matrix4f Camera::getProjMatrix() {

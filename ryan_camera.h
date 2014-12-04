@@ -18,8 +18,11 @@ public:
   Matrix4f modelMat;
   Matrix4f viewMat;
   Matrix4f projMat;
+  GLfloat height = 800.0;
+  GLfloat width = 600.0;
   Matrix4f getViewMatrix();
   Matrix4f getProjMatrix();
+  GLfloat fovX();
   float speed;
 
   // Camera(void);

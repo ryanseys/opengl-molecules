@@ -39,9 +39,9 @@ protected:
     Matrix4f modelMat = Matrix4f::identity();
     Matrix4f rotMat = Matrix4f::identity();
 public:
-  Vector4f materialAmbient;
-  Vector4f materialDiffuse;
-  Vector4f materialSpecular;
+  Vector4f materialAmbient = Vector4f(1, 1, 1, 1);
+  Vector4f materialDiffuse = Vector4f(1, 1, 1, 1);
+  Vector4f materialSpecular = Vector4f(1, 1, 1, 1);
 
   Cylinder(int sectors) {
 

@@ -41,6 +41,8 @@ std::vector<std::string> files;
 
 Camera * cam;
 
+int isPaused = 0;
+
 // Skybox related variables
 SkyBox skybox;
 GLuint skyboxProg;
@@ -157,6 +159,8 @@ void loadMolecule(std::string filename) {
   printf("Done loading molecule: %s\n", filename.c_str());
 }
 
+// Cylinder * cylinder;
+
 void display() {
   glEnable(GL_DEPTH_TEST);
   glClearColor(1.0, 1.0, 1.0, 1);
@@ -200,7 +204,12 @@ void display() {
   glUniform1f(spotConeAngleLoc, spotlight->coneAngle);
 
   // setting up the transformation of the object from model coord. system to world coord.
-  Matrix4f worldMat = cam->getViewMatrix();
+  // Matrix4f worldMat = cam->getViewMatrix();
+
+  // cylinder->translate(clickPos.x, clickPos.y, clickPos.z);
+  // cylinder->rotateVector(cylinderVec, cylinderAngle);
+  // cylinder->scale(0.01, 40, 0.01);
+  // cylinder->draw(shaderProg);
 
   /**
    * Go through each atom and draw it.
@@ -235,7 +244,9 @@ void idleFunc() {
 }
 
 void renderTick(int value) {
-  rotateMoleculeY = (rotateMoleculeY + 0.006);
+  if(!isPaused){
+    rotateMoleculeY = (rotateMoleculeY + 0.006);
+  }
   glutPostRedisplay();
   glutTimerFunc(TIMER_TICK, renderTick, 1); // restart the timer
 }
@@ -295,6 +306,12 @@ void keyboardFunc(unsigned char key, int x, int y) {
       printf("rotateAngle: %f\n", rotateAngle);
       break;
     }
+    case 'p': {
+      // Pause the rotation
+      isPaused = isPaused == 0 ? 1 : 0;
+      printf("Play/pause toggled\n");
+      break;
+    }
     default: return;
   }
   glutPostRedisplay();
@@ -339,9 +356,13 @@ int valid = 0;
 void mouseButton(int button, int state, int x, int y) {
   xLast = x;
   yLast = y;
-  xStart = x;
-  yStart = y;
-  valid = state == GLUT_DOWN;
+  if(state == GLUT_DOWN) {
+    valid = true;
+    xStart = x;
+    yStart = y;
+  } else {
+    valid = false;
+  }
 }
 
 void mouseMove(int x, int y) {
@@ -367,7 +388,7 @@ int main(int argc, char** argv) {
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
-  // glutIdleFunc(idleFunc);
+  glutIdleFunc(idleFunc);
   glutSpecialFunc(pressSpecialKey);
 
   glutMouseFunc(mouseButton);
@@ -384,6 +405,8 @@ int main(int argc, char** argv) {
     "textures/bokeh_front.png",
     "textures/bokeh_back.png"
   };
+
+  // cylinder = new Cylinder(30);
 
   skybox.loadSkybox(skyboxTex);
   skybox.init();

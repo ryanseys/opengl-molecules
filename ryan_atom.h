@@ -54,6 +54,20 @@ public:
     // destructor
   }
 
+  GLfloat getDistance(Vector3f v) {
+    return (Vector3f(x, y, z) - v).length();
+  }
+
+  void highlight() {
+    this->sphere->setAmbient(1.0, 1.0, 1.0); // material ambient color
+    this->sphere->setDiffuse(1.0, 1.0, 1.0); // material diffuse color
+    this->sphere->setSpecular(1.0, 1.0, 1.0); // material specular color
+  }
+
+  Vector3f getPosition() {
+    return Vector3f(x, y, z);
+  }
+
   void setRadius(GLfloat r) {
     this->radius = r;
   }
