@@ -148,7 +148,7 @@ void loadMolecule(std::string filename) {
 
     int order = bond.attribute("order").as_int();
 
-    Bond tempBond(atom_map.find(token1)->second, atom_map.find(token2)->second);
+    Bond tempBond(atom_map.find(token1)->second, atom_map.find(token2)->second, order);
 
     bond_list.push_back(tempBond);
 
