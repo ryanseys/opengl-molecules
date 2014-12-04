@@ -51,7 +51,6 @@ cmls/C60-buckminsterfullerene.cml
 cmls/C70.cml
 cmls/C76.cml
 cmls/C80.cml
-cmls/Cp-cyclopentadienyl.cml
 cmls/D-alanine.cml
 cmls/D-allo-threonine.cml
 cmls/D-arginine.cml

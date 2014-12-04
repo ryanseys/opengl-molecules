@@ -122,7 +122,7 @@ void loadMolecule(std::string filename) {
     GLfloat z = atom.attribute("z3").as_float();
     std::string id = atom.attribute("id").as_string();
 
-    char atomType = *atom.attribute("elementType").value();
+    std::string atomType = atom.attribute("elementType").as_string();
 
     // std::cout << "Element: " << atom.attribute("elementType").value();
     // std::cout << ", X: " << x;
