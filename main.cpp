@@ -21,7 +21,6 @@
 const GLfloat PITCH_AMT = 1.0; // degrees up and down
 const GLfloat YAW_AMT = 5.0; // degrees right and left
 const GLfloat FORWARD_AMT = 0.5;
-const GLfloat RIGHT_AMT = 0.5;
 const GLfloat TIMER_TICK = 20; // milliseconds
 
 Vector3f position (0.0, 1.0, 10.0);
