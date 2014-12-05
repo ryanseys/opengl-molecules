@@ -5,7 +5,6 @@
 #include <fstream>
 #include <map>
 #include "Shader.h"
-#include "ryan_cube.h"
 #include "ryan_camera.h"
 #include "ryan_matrix.h"
 #include "ryan_light.h"
@@ -47,7 +46,6 @@ int isPaused = 0;
 // Skybox related variables
 SkyBox skybox;
 GLuint skyboxProg;
-GLuint sphereBoxProg;
 
 Light * light;
 Light * spotlight;
@@ -135,12 +133,6 @@ void display() {
 void reshape(GLint w, GLint h) {
   glViewport(0, 0, (GLsizei) w, (GLsizei) h);
   cam->reshape(w, h);
-}
-
-int t = 0;
-void idleFunc() {
-  t++;
-  glutPostRedisplay();
 }
 
 void renderTick(int value) {
@@ -279,7 +271,6 @@ int main(int argc, char** argv) {
   glutDisplayFunc(display);
   glutReshapeFunc(reshape);
   glutKeyboardFunc(keyboardFunc);
-  glutIdleFunc(idleFunc);
   glutSpecialFunc(pressSpecialKey);
 
   glutMouseFunc(mouseButton);
@@ -299,12 +290,6 @@ int main(int argc, char** argv) {
 
   skybox.loadSkybox(skyboxTex);
   skybox.init();
-
-  int rc = s.createShaderProgram("sphereBox.vert", "sphereBox.frag", &sphereBoxProg);
-  if (rc != 0) {
-    printf(" error after generating sphere skybox shaders \n");
-    rc = 4;
-  }
 
   // Uncomment the code below to work on Windows!
   // GLenum err = glewInit();

@@ -77,7 +77,7 @@ public:
 
       bond_list.push_back(tempBond);
     }
-    printf("Done loading molecule: %s\n", filename.c_str());
+    printf("Loaded molecule: %s\n", filename.c_str());
   }
 
   ~Molecule() {

@@ -1,42 +1,10 @@
-﻿//=============================================================================
-// skybox.cpp
-//
-//Author: Doron Nussbaum (C) 2014 All Rights Reserved.
-//-----------------------------------------------------
-//
-// Purpose:
-//--------------
-// a. demonstarte the usage of a skybox
-//
-//
-// Description:
-//--------------
-// A simple application that demonstrates how to crete and use a skybox
-//
-//
-// License
-//--------------
-//
-// Code can be used for instructional and educational purposes.
-// Usage of code for other purposes is not allowed without a given permission by the author.
-//
-//
-// Disclaimer
-//--------------
-//
-// The code is provided as is without any warranty
-
-#include "SkyBox.h"
-
+﻿#include "SkyBox.h"
 #include "stdio.h"
 #include "stdlib.h"
 #include "SOIL.h"
 #include "ryan_matrix.h"
 
-// helper function - move to a new file gl_util
-
-static int checkError()
-{
+static int checkError() {
   int rc = glGetError();
   switch (rc) {
   case GL_NO_ERROR:
@@ -67,7 +35,6 @@ static int checkError()
     rc = 6;
     break;
 
-
   default:
     printf("gl error - default \n");
     rc = 9;
@@ -78,7 +45,6 @@ static int checkError()
 
 SkyBox::SkyBox(void) : texHandle(0),s() {
 }
-
 
 SkyBox::~SkyBox(void) {
 }
@@ -141,14 +107,6 @@ void SkyBox::displaySkybox(Camera cam) {
 
   Matrix4f viewMat, projMat, modelMat, m;
 
-  // set local camera for the skybox
-  // Camera c1 = cam;
-  //c1.changeAbsPoition(0,0,0);
-  //c1.changeLookAtVector(1, 1, 1);
-
-  //glFrontFace(GL_CW);
-  //glCullFace(FRONT);
-
   // set up the mode to wireframe
   glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
   //set up the mode to fill
@@ -161,16 +119,8 @@ void SkyBox::displaySkybox(Camera cam) {
 
   // setting up the viewpoint transformation
   viewMat = cam.getViewMatrix();
-
-  // setting up the projection transformation  make sure that it is the same
-  // projection as the display function!!!
-  //projMat =   Matrix4f::symmetricPerspectiveProjectionMatrix(30, 1, 0.1, 500);
   projMat = cam.getProjMatrix();
 
-  // frustum matrix
-  //projMat = Matrix4f::frustumProjectionMatrix(-1,-1,1,1, 10,100);
-
-  // putting it all together
   m = projMat * viewMat * modelMat;
 
   // load the program to the shader
@@ -207,20 +157,12 @@ void SkyBox::displaySkybox(Camera cam) {
   GLint ttt = 0;
   glGetUniformiv(shaderProg, texLoc, &ttt);
 
-  //glUniform1i(glGetUniformLocation(skyboxProg, "texCube"), texCube);
-  //glDisable(GL_CULL_FACE);
-
   // bind the buffers to the shaders
   GLuint positionLoc = glGetAttribLocation(shaderProg, "vertex_position");
-  //GLuint normalLoc = glGetAttribLocation(shaderProg, "vertex_normal");
-  //GLuint texLoc = glGetAttribLocation(shaderProg, "texCoord");
 
   glEnableVertexAttribArray(positionLoc);
-  //glEnableVertexAttribArray(normalLoc);
-  //glEnableVertexAttribArray(texLoc);
   glBindBuffer(GL_ARRAY_BUFFER, vboCube);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboCube);
-
 
   // Tells OpenGL how to walk through the two VBOs
   glVertexAttribPointer(positionLoc,4,GL_FLOAT, GL_FALSE, 0,0);
@@ -266,10 +208,8 @@ int SkyBox::createCube(void) {
       {10.0,  10.0, -10.0, 1.0}};
 
   glGenBuffers(1, &vboCube);
-  printf("sizeof vtx=%d \n",sizeof(vtx));
   glBindBuffer(GL_ARRAY_BUFFER, vboCube);
   glBufferData(GL_ARRAY_BUFFER, sizeof(vtx), vtx, GL_STATIC_DRAW);
-  //glBindBuffer(GL_ARRAY_BUFFER, 0);
 
   GLuint ind[12][3] = {
     {0, 1, 2},
@@ -286,7 +226,6 @@ int SkyBox::createCube(void) {
     {6, 5, 1},
   };
 
-  printf("sizeof ind=%d size of gluint*36=%d \n",sizeof(ind), sizeof(GLuint)*36);
   glGenBuffers(1, &iboCube);
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboCube);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(ind), ind, GL_STATIC_DRAW);
@@ -294,62 +233,18 @@ int SkyBox::createCube(void) {
   return 0;
 }
 
-/*******************************************************************************/
-
+/**
+ * Initialize the Skybox.
+ */
 int SkyBox::init(void) {
   int rc;
   rc = s.createShaderProgram("skybox.vert","skybox.frag", &shaderProg);
   if (rc != 0) {
-    printf(" error after generating skybox shaders \n");
+    printf("Error after generating skybox shaders.\n");
     getchar();
     exit(1);
   }
 
   createCube();
-
-  return 0;
-}
-
-// loads a colour textures
-// front (posZ) is purple (magenta),
-// back (negZ) is yellow,
-// left (negX) is green
-// right (posX) is red
-// top (posY) is blue)
-// bottom (negY) is cyan
-int SkyBox::loadColourTexture(void) {
-  int width=1, height=1;
-  GLubyte posX[4] = {255, 0, 0, 1};
-  GLubyte negX[4] = {0, 255, 0, 1};
-  GLubyte posY[4] = {0, 0, 255, 1};
-  GLubyte negY[4] = {0, 255, 255, 1};
-  GLubyte posZ[4] = {255, 0, 255, 1};
-  GLubyte negZ[4] = {255, 255, 0, 1};
-
-  // Create texture object
-  glGenTextures(1, &texHandle);
-  //glActiveTexture(GL_TEXTURE1);
-  glBindTexture(GL_TEXTURE_CUBE_MAP, texHandle);
-  checkError();
-
-  glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0,GL_RGBA,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE, posX);
-  checkError();
-  glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0,GL_RGBA,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE, negX);
-  checkError();
-  glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0,GL_RGBA,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE, posY);
-  checkError();
-  glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0,GL_RGBA,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE, negY);
-  checkError();
-  glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0,GL_RGBA,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE, posZ);
-  glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0,GL_RGBA,width,height,0,GL_RGBA,GL_UNSIGNED_BYTE, negZ);
-  checkError();
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER,GL_NEAREST);
-  checkError();
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP);
-  checkError();
-  glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP);
-  checkError();
-
   return 0;
 }
