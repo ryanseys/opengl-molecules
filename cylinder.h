@@ -54,11 +54,11 @@ public:
     for( int s = 0; s < sectors; ++s ){
         float x = (float) cos( 2 * M_PI * s * S );
         float z = (float) sin( 2 * M_PI * s * S );
-        m_vertices[s]           = Vertex( Vector3f( x, 1.0f, z ), Vector3f( x, 1.0f, z ) );
-        m_vertices[s+sectors]   = Vertex( Vector3f( x, -1.0f, z ), Vector3f( x, 1.0f, z ) );
+        m_vertices[s] = Vertex( Vector3f( x, 1.0f, z ), Vector3f( x, 1.0f, z ) );
+        m_vertices[s+sectors] = Vertex( Vector3f( x, -1.0f, z ), Vector3f( x, 1.0f, z ) );
     }
-    m_vertices[sectors*2]           = Vertex( Vector3f( 0, 1.0f, 0 ), Vector3f( 0, 1.0f, 0 ));
-    m_vertices[sectors*2 + 1]       = Vertex( Vector3f( 0, -1.0f, 0 ), Vector3f( 0, -1.0f, 0 ));
+    m_vertices[sectors*2] = Vertex( Vector3f( 0, 1.0f, 0 ), Vector3f( 0, 1.0f, 0 ));
+    m_vertices[sectors*2 + 1] = Vertex( Vector3f( 0, -1.0f, 0 ), Vector3f( 0, -1.0f, 0 ));
 
     //create the indices
     i = 0;

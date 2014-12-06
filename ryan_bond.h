@@ -51,14 +51,14 @@ public:
 
     this->translate(this->x, this->y, this->z);
 
-    // Get diff between two points (line the firstBond should follow)
+    // Get diff between two points (line the bond(s) should follow)
     Vector3f p(
       secondAtom.x - firstAtom.x,
       secondAtom.y - firstAtom.y,
       secondAtom.z - firstAtom.z
     );
 
-    // This is the default direction for the firstBond
+    // This is the default direction for the bond(s)
     Vector3f z(0, 1.0, 0);
 
     // Get cross product (the axis of rotation)

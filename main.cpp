@@ -168,30 +168,6 @@ void keyboardFunc(unsigned char key, int x, int y) {
       cam->moveForward(-FORWARD_AMT);
       break;
     }
-    case 'x': {
-      angularAtten++;
-      spotlight->setAngularAttenuation(angularAtten);
-      printf("angularAtten: %f\n", angularAtten);
-      break;
-    }
-    case 'z': {
-      angularAtten--;
-      spotlight->setAngularAttenuation(angularAtten);
-      printf("angularAtten: %f\n", angularAtten);
-      break;
-    }
-    case 'v': {
-      coneAngle++;
-      spotlight->setConeAngle(coneAngle);
-      printf("coneAngle: %f\n", coneAngle);
-      break;
-    }
-    case 'c': {
-      coneAngle--;
-      spotlight->setConeAngle(coneAngle);
-      printf("coneAngle: %f\n", coneAngle);
-      break;
-    }
     case 'p': {
       // Pause the rotation
       isPaused = isPaused == 0 ? 1 : 0;
