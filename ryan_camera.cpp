@@ -10,6 +10,7 @@
 #ifdef __APPLE_CC__
 #include <GLUT/glut.h>
 #else
+#include "glew.h"
 #include <GL/glut.h>
 #endif
 

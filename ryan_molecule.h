@@ -1,6 +1,7 @@
 #ifndef RYAN_MOLECULE
 #define RYAN_MOLECULE
 
+#include <algorithm>
 #include "ryan_atom.h"
 #include "ryan_bond.h"
 #include "pugixml.hpp"

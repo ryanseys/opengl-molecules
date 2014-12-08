@@ -15,6 +15,7 @@
 #ifdef __APPLE__
 #include <GLUT/glut.h>
 #else
+#include "glew.h"
 #include <GL/glut.h>
 #endif
 
@@ -251,6 +252,12 @@ int main(int argc, char** argv) {
   glutMouseFunc(mouseButton);
   glutMotionFunc(mouseMove);
 
+  // Uncomment the code below to work on Windows!
+  // GLenum err = glewInit();
+  // if (err != GLEW_OK) {
+  //   printf("Error initializing GLEW!\n");
+  // }
+
   // load default molecule
   molecule = new Molecule("cmls/caffeine.cml");
 
@@ -265,12 +272,6 @@ int main(int argc, char** argv) {
 
   skybox.loadSkybox(skyboxTex);
   skybox.init();
-
-  // Uncomment the code below to work on Windows!
-  // GLenum err = glewInit();
-  // if (err != GLEW_OK) {
-  //   printf("Error initializing GLEW!\n");
-  // }
 
   s.createShaderProgram("phong.vert", "phong.frag", &shaderProg);
 
