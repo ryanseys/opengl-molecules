@@ -1,7 +1,13 @@
 opengl-molecules
 ================
 
+## Installation
+
+Should be self-sufficient to run on Mac OS X Yosemite.
+
 ## Usage
+
+To compile and run:
 
 ``` sh
 make
@@ -9,4 +15,4 @@ make
 
 ## License
 
-None yet. Do not use. Copyright Ryan Seys 2014.
+MIT
