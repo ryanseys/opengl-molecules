@@ -434,22 +434,6 @@ public:
     return(m1);
   }
 
-  static Matrix4f frustumProjectionMatrix(float winMinX, float winMinY, float winMaxX,float winMaxY,float nearPlane, float farPlane) {
-    Matrix4f m1;
-    m1 = identity();
-
-    m1.vm[0].x = 2*nearPlane/(winMaxX - winMinX);   // check why it is not "-2"
-    m1.vm[0].z = (winMaxX + winMinX) /  (winMaxX - winMinX);
-    m1.vm[1].y = 2*nearPlane/(winMaxY - winMinY);   // check why it is not "-2"
-    m1.vm[1].z = (winMaxY + winMinY) /  (winMaxY - winMinY);
-    m1.vm[2].z = (nearPlane + farPlane) / (nearPlane - farPlane);
-    m1.vm[2].w = (2*nearPlane * farPlane) / (nearPlane - farPlane);
-    m1.vm[3].z = -1;
-    m1.vm[3].w = 0;
-
-    return(m1);
-  }
-
   /**
    * Resets all the values of the matrix to "value".
    * Sets all 16 values of the matrix to value.

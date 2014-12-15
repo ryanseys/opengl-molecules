@@ -8,7 +8,7 @@
 uniform mat4 modelMat;
 uniform mat4 viewMat;
 uniform mat4 projMat;
-uniform mat4 normalMat;
+uniform mat4 normalMat; // inverse then transpose of rotation matrix
 
 attribute vec4 vPosition;   // the vertex position (in the local space) from VBO
 attribute vec4 vNormal;   // the vertex normal (in the local space) from VBO

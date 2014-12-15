@@ -34,7 +34,7 @@ void main (void) {
   vec4 E = normalize(-v);
   vec4 R = normalize(reflect(-L, N));
 
-  vec4 ambient = lightAmb * materialAmb;
+  vec4 ambient = lightAmb * materialAmb; // component-wise multiplication.
   vec4 diffuse = clamp(max(dot(N, L) * lightDiff * materialDiff, 0.0), 0.0, 1.0);
   vec4 specular = clamp(lightSpec * materialSpec * pow(max(dot(R, E), 0.0), shininess) , 0.0, 1.0);
 
