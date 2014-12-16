@@ -397,15 +397,12 @@ public:
 
   static Matrix4f cameraMatrix(Vector3f position, Vector3f lookAtPoint, Vector3f upVector) {
     Matrix4f m1;
+    m1 = identity();
     Vector3f u,v,n;
 
-    m1 = identity();
-    n = position-lookAtPoint;
-    n.normalize();
     upVector.normalize();
-
-    u = Vector3f::cross(upVector, n);
-    u.normalize();
+    n = (position - lookAtPoint).normalize();
+    u = Vector3f::cross(upVector, n).normalize();
     v = Vector3f::cross(n, u);
 
     m1.vm[0] = Vector4f(u,0);
