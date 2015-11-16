@@ -1,6 +1,10 @@
 opengl-molecules
 ================
 
+## Screenshot
+
+![screenshot](screenshot.gif)
+
 ## Installation
 
 You have to install `libSOIL` by doing the following:
